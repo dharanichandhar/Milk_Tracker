@@ -46,30 +46,29 @@ Then you can test it by running this command: `uv run main.py`
 
 ## Step 6: Install postgresql
 
-Follow the steps here to install postgresql from the docker image - https://postgres.guide/docs/getting-started/
+Run this command to get the docker image: `docker pull postgres:18`
 
-Test it by creating a sample database table and running a query on it
+Then run the below command from within the project directory to run the server
+
+```bash
+docker run -d \
+  --name tinymagiq-postgres \
+  -e POSTGRES_USER=admin \
+  -e POSTGRES_PASSWORD=secret \
+  -e POSTGRES_DB=trainingdb \
+  -p 5432:5432 \
+  postgres
+```
+
+Test it by running `uv run test_db.py`
 
 ## Step 7: Install Node JS
 
-Install instructions
+First install nvm: `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash`
+Then reload the configuration: `source ~/.bashrc`
+Finally install node 22: `nvm install 24`
 
-```bash
-# Docker has specific installation instructions for each operating system.
-# Please refer to the official documentation at https://docker.com/get-started/
-
-# Pull the Node.js Docker image:
-docker pull node:24-alpine
-
-# Create a Node.js container and start a Shell session:
-docker run -it --rm --entrypoint sh node:24-alpine
-
-# Verify the Node.js version:
-node -v # Should print "v24.14.0".
-
-# Verify npm version:
-npm -v # Should print "11.9.0".
-```
+Test by running these two commands: `node -v` and `npm -v`
 
 ## Step 8: Install Opencode
 
