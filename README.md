@@ -36,21 +36,19 @@ After SSH key is created on your laptop, you need to configure Github with your 
 
 Test everything by cloning this repository through this command: `git clone git@github.com:silverstripesoftware/tinymagiq-fde.git`
 
-Go inside this directory and run the command to check if python is working: `python setup/main.py`
-
-## Step 5: Install postgresql
-
-Follow the steps here to install postgresql from the docker image - https://postgres.guide/docs/getting-started/
-
-Test it by creating a sample database table and running a query on it
-
-## Step 6: Install uv
+## Step 5: Install uv
 
 `uv` is used to create python projects. Install instructions are here - https://docs.astral.sh/uv/getting-started/installation/
 
 Now run `uv sync` to download and install the basic dependencies for this project
 
-Then you can test the connection to postgres database by running this command: `uv run python setup/test_pg.py`
+Then you can test it by running this command: `uv run main.py`
+
+## Step 6: Install postgresql
+
+Follow the steps here to install postgresql from the docker image - https://postgres.guide/docs/getting-started/
+
+Test it by creating a sample database table and running a query on it
 
 ## Step 7: Install Node JS
 
@@ -83,5 +81,9 @@ Test it by running `opencode` inside the project directory. Ask it to explain wh
 
 Install the following extensions for VSCode:
 
-- Python: https://marketplace.visualstudio.com/items?itemName=ms-python.python
 - WSL: https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl
+- Python: https://marketplace.visualstudio.com/items?itemName=ms-python.python
+
+After that, go to the WSL terminal, and inside the project directory, run the command `code .` to launch VS Code from inside WSL
+
+Then re-install Python extension from within WSL
