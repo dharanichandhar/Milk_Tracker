@@ -17,3 +17,4 @@ notes.md
 uploads/
 __marimo__/
 .vscode/
+.env

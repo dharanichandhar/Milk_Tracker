@@ -76,6 +76,8 @@ Run this command: `curl -fsSL https://opencode.ai/install | bash`
 
 Test it by running `opencode` inside the project directory. Ask it to explain what `test_pg.py` file does
 
+Then run the `/connect` command, select `Baseten` as provider, and ask me for the API Key and then select `GLM 5` as the model
+
 ## Step 9: Install VS Code Extensions
 
 Install the following extensions for VSCode:
