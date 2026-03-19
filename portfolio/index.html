@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siddharta Govindaraj - Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .timeline-container {
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        .timeline-item {
+            scroll-snap-align: center;
+        }
+        .timeline-container::-webkit-scrollbar {
+            height: 8px;
+        }
+        .timeline-container::-webkit-scrollbar-track {
+            background: #1f2937;
+            border-radius: 4px;
+        }
+        .timeline-container::-webkit-scrollbar-thumb {
+            background: #6366f1;
+            border-radius: 4px;
+        }
+        .timeline-container::-webkit-scrollbar-thumb:hover {
+            background: #4f46e5;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen">
+    <div class="max-w-4xl mx-auto px-6 py-12">
+        
+        <section class="text-center mb-16">
+            <div class="mb-8">
+                <div class="w-48 h-48 mx-auto rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-6xl font-bold text-white shadow-2xl">
+                    SG
+                </div>
+            </div>
+            <h1 class="text-5xl font-bold mb-4 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                Siddharta Govindaraj
+            </h1>
+            <p class="text-xl text-gray-400 font-light tracking-wide">
+                AI Trainer, Consultant, Python Geek, Author
+            </p>
+        </section>
+
+        <section class="mb-12">
+            <div class="bg-gray-800/50 rounded-2xl p-8 backdrop-blur border border-gray-700">
+                <div class="prose prose-invert max-w-none text-gray-300 leading-relaxed space-y-4">
+                    <p class="text-lg">
+                        Agentic coding is revolutionising software development. The mythical 10x programmer is now within everyone's grasp. Today, a single team of three engineers can be more productive than a team of twenty from five years ago. Interested in getting there for yourself or your team? Let's talk!
+                    </p>
+                    <p>
+                        Hi, I'm Siddharta, and I've been working on making programmers 10x more productive for the last fifteen years. I started my consulting with technical agility, test driven development, clean code, and devops pipelines. I then transitioned to Python, Javascript, and training the full stack developer. Today I work with teams to incorporate agentic coding practices.
+                    </p>
+                    <p class="text-indigo-400 font-medium">
+                        The 10x programmer is now within everyone's reach. Let's find out how.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="text-center mb-16">
+            <a href="Profile.pdf" download class="inline-flex items-center gap-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-indigo-500/25 hover:scale-105">
+                <i class="fas fa-download"></i>
+                Download Resume
+            </a>
+        </section>
+
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8 text-gray-100">Career Timeline</h2>
+            <p class="text-center text-gray-400 mb-6">Scroll horizontally to explore</p>
+            
+            <div class="timeline-container flex overflow-x-auto gap-6 pb-4" style="height: 320px;">
+                
+                <div class="timeline-item flex-shrink-0 w-96 bg-gray-800/50 rounded-2xl border border-gray-700 overflow-hidden flex">
+                    <div class="w-1/3 bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center">
+                        <i class="fas fa-robot text-5xl text-white/80"></i>
+                    </div>
+                    <div class="w-2/3 p-6 flex flex-col justify-center">
+                        <span class="text-indigo-400 text-sm font-medium mb-2">Nov 2025 - Present</span>
+                        <h3 class="text-xl font-bold mb-3 text-white">Agentic Coding Consultant</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">A lot of people confuse agentic coding with AI slop. And they are not wrong - that is what it is when it is vibe coded. Agentic engineering, on the other hand, is high quality, precisely engineered code. There is a process for it and that's what I teach</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item flex-shrink-0 w-96 bg-gray-800/50 rounded-2xl border border-gray-700 overflow-hidden flex">
+                    <div class="w-1/3 bg-gradient-to-br from-cyan-600 to-blue-600 flex items-center justify-center">
+                        <i class="fas fa-brain text-5xl text-white/80"></i>
+                    </div>
+                    <div class="w-2/3 p-6 flex flex-col justify-center">
+                        <span class="text-cyan-400 text-sm font-medium mb-2">Oct 2024 - Nov 2025</span>
+                        <h3 class="text-xl font-bold mb-3 text-white">Gen AI Trainer</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">Learn to harness generative AI to solve problems. Build bots, agents and orchestrations to automate hard parts of your organisational workflows. Building AI powered applications is easy in demos but complex to get right in production. Harvard says 80% of enterprise AI deployments fail. What does it take to be in the 20%?</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item flex-shrink-0 w-96 bg-gray-800/50 rounded-2xl border border-gray-700 overflow-hidden flex">
+                    <div class="w-1/3 bg-gradient-to-br from-emerald-600 to-teal-600 flex items-center justify-center">
+                        <i class="fas fa-layer-group text-5xl text-white/80"></i>
+                    </div>
+                    <div class="w-2/3 p-6 flex flex-col justify-center">
+                        <span class="text-emerald-400 text-sm font-medium mb-2">Jun 2016 - Oct 2024</span>
+                        <h3 class="text-xl font-bold mb-3 text-white">Full Stack Consultant</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">Full stack knowledge is challenging. The engineer needs to know the equivalent of three regular engineers. But the outcome from a full stack engineer is incredible. Features that used to take weeks as they handed-off between multiple teams can now be completed by a small team without any handoffs.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item flex-shrink-0 w-96 bg-gray-800/50 rounded-2xl border border-gray-700 overflow-hidden flex">
+                    <div class="w-1/3 bg-gradient-to-br from-amber-600 to-orange-600 flex items-center justify-center">
+                        <i class="fas fa-code-branch text-5xl text-white/80"></i>
+                    </div>
+                    <div class="w-2/3 p-6 flex flex-col justify-center">
+                        <span class="text-amber-400 text-sm font-medium mb-2">May 2013 - Jun 2016</span>
+                        <h3 class="text-xl font-bold mb-3 text-white">Technical Agile Coach</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">The bedrock of being able to do quick delivery is to have solid technical practices to enable it. Test driven development, clean code, continuous integration and continuous deployment pipelines. Add to that development practices that encourage iterative development, small features delivered frequently, measuring the data and making changes.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold text-center mb-8 text-gray-100">Get In Touch</h2>
+            <div class="bg-gray-800/50 rounded-2xl p-8 backdrop-blur border border-gray-700">
+                <div class="flex flex-col md:flex-row justify-center items-center gap-8">
+                    <a href="tel:+919940036487" class="flex items-center gap-4 text-gray-300 hover:text-indigo-400 transition-colors">
+                        <div class="w-12 h-12 rounded-full bg-indigo-600/20 flex items-center justify-center">
+                            <i class="fas fa-phone text-indigo-400"></i>
+                        </div>
+                        <span>+91 99400 36487</span>
+                    </a>
+                    <a href="mailto:siddharta@silverstripesoftware.in" class="flex items-center gap-4 text-gray-300 hover:text-indigo-400 transition-colors">
+                        <div class="w-12 h-12 rounded-full bg-indigo-600/20 flex items-center justify-center">
+                            <i class="fas fa-envelope text-indigo-400"></i>
+                        </div>
+                        <span>siddharta@silverstripesoftware.in</span>
+                    </a>
+                    <a href="https://www.linkedin.com/in/siddharta/" target="_blank" class="flex items-center gap-4 text-gray-300 hover:text-indigo-400 transition-colors">
+                        <div class="w-12 h-12 rounded-full bg-indigo-600/20 flex items-center justify-center">
+                            <i class="fab fa-linkedin text-indigo-400"></i>
+                        </div>
+                        <span>LinkedIn</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center text-gray-500 text-sm py-8 border-t border-gray-800">
+            <p>&copy; 2025 Siddharta Govindaraj. All rights reserved.</p>
+        </footer>
+
+    </div>
+</body>
+</html>
