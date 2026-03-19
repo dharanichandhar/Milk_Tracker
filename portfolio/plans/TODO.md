@@ -1,102 +1,40 @@
-# Portfolio Site Implementation Roadmap
+# Portfolio Website - Pending Fixes
 
-## Overview
-Single-page HTML portfolio for Siddharta Govindaraj - AI Trainer & Consultant.
-**Total: 9 phases, 27 tasks**
+## High Priority
 
----
+- [x] **Type-in effect for terminal code** - Character-by-character typing animation with blinking cursor. Each line types out sequentially.
 
-## Phase 1: Foundation
+- [x] **Scroll-triggered fade animations** - Elements with `.fade-in` class animate on scroll. Projects section uses scroll-snap within container with tab navigation.
 
-- [x] **HTML Skeleton & SEO** - Basic HTML5 structure with meta tags, Open Graph, viewport
-- [x] **CSS Custom Properties** - Define color palette, spacing, typography variables for light/dark themes
-- [x] **Google Fonts Integration** - Load Inter font family
+- [ ] **Cursor blink animation** - The blinking cursor effect (used in logo and potentially elsewhere) is not functioning properly.
 
----
+- [x] **Light/Dark mode toggle** - Theme toggle button added to header. Uses Catppuccin Latte for light mode. Preference persisted in localStorage.
 
-## Phase 2: Core Infrastructure
+- [x] **Hero profile image** - Circular profile photo added to hero section, positioned left of the name with green glow border.
 
-- [x] **Theme Toggle System** - Dark/light mode with localStorage persistence, CSS class switching
-- [x] **Sticky Header** - Logo, navigation links, contact icons, theme toggle button
-- [x] **Smooth Scroll Navigation** - Anchor links with smooth scrolling behavior
+- [x] **Testimonial profile image** - Updated with correct LinkedIn profile image URL. Author title updated to "VP, Engineering".
 
----
+## Implementation Notes
 
-## Phase 3: Hero Section
+### Type-in Effect
+- JavaScript types each line character-by-character (30ms per char)
+- Blinking cursor appears while typing
+- 150ms delay between lines
+- Syntax highlighting preserved during animation
 
-- [x] **Hero Layout** - Flexbox structure, gradient background (Purple #8B5CF6 → Violet #7C3AED → Deep Blue #6366F1)
-- [x] **Photo Component** - Circular image (280x280px) with purple glow border
-- [x] **Typing Animation** - JavaScript typewriter effect cycling through: AI Trainer, Consultant, Python Geek, Author
-- [x] **Hero Buttons** - "Contact Me" (outline) and "Download Resume" (filled) with hover states
+### Scroll Animations
+- IntersectionObserver properly initialized for `.fade-in` elements
+- `.fade-in` elements have correct initial styles (opacity: 0, transform: translateY)
+- `.visible` class properly overrides with opacity: 1, transform: translateY(0)
+- Projects section: scroll-snap within 400px container, tabs update on scroll
 
----
+### Theme Toggle
+- Toggle button in header actions (moon/sun icons)
+- Light mode uses Catppuccin Latte color scheme
+- Dark mode uses Catppuccin Mocha color scheme
+- `data-theme` attribute on `<html>` element
+- Preference stored in localStorage
 
-## Phase 4: About Section
-
-- [x] **About Layout** - Quote box + body text structure
-- [x] **About Animation** - Fade-in on scroll via Intersection Observer
-
----
-
-## Phase 5: Skills Section
-
-- [x] **Skills Grid Layout** - 3-column responsive grid (3-col ≥768px, 1-col <768px)
-- [x] **Skill Cards** - Accent bars (4px), category headers, tag pills (rounded 9999px)
-- [x] **Skills Animation** - Staggered fade-in + slide-up on scroll
-
----
-
-## Phase 6: Timeline Section
-
-- [x] **Timeline Structure** - Vertical line with position markers (12px circular dots)
-- [x] **Timeline Cards** - Content cards with hover lift/shadow effects
-- [x] **Timeline Animation** - Staggered slide-in on scroll
-
----
-
-## Phase 7: Projects Section
-
-- [x] **Projects Container** - Scroll-snap container setup (400px fixed height)
-- [x] **Project Cards** - Image left, text right layout, tags, visit button
-- [x] **Progress Dots** - 4 dots, active indicator synced with scroll position
-- [x] **Projects Animation** - Fade transitions between projects (0.5s ease)
-
----
-
-## Phase 8: Testimonials Section
-
-- [x] **Testimonial Card** - Quote, author photo (64x64px circular), name, title
-- [x] **Testimonial Animation** - Fade-in on scroll
-
----
-
-## Phase 9: Contact & Footer
-
-- [x] **Contact Card** - Phone, email, LinkedIn with inline SVG icons
-- [x] **Footer** - Divider line and copyright text
-
----
-
-## File Structure
-
-```
-portfolio/
-├── index.html      (main portfolio - single file)
-├── Profile.pdf     (existing - linked for download)
-├── images/
-│   ├── playfulpython.png
-│   ├── siddharta.png
-│   ├── toolsforagile.png
-│   └── book.png
-└── plans/
-    ├── REQUIREMENTS.md
-    └── TODO.md (this file)
-```
-
----
-
-## Notes
-
-- All CSS and JS embedded in single HTML file (no external dependencies except fonts)
-- Target deployment: GitHub Pages
-- Browser support: Modern browsers (Chrome, Firefox, Safari, Edge) + mobile
+### Profile Images
+- Hero: Added circular profile photo (120x120px) with green glow border, positioned left of name
+- Testimonial: Updated with Kapil Sharma's LinkedIn photo

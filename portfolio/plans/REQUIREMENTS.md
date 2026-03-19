@@ -317,9 +317,10 @@ Single-page HTML portfolio for Siddharta Govindaraj - AI Trainer & Consultant. D
 | Element | Specification |
 |--------|---------------|
 | **Section Header** | "Projects" centered |
-| **Layout** | Scroll-snap container, one project visible at a time |
-| **Scroll Behavior** | Section sticks, projects fade in/out on scroll |
+| **Layout** | Scroll-snap container within section, one project visible at a time |
+| **Scroll Behavior** | Scroll-snap within 400px container, tabs update on scroll |
 | **Container Height** | 400px fixed height |
+| **Tab Navigation** | Tabs at top, active tab highlights, click to scroll to project |
 | **Card Layout** | Flexbox - image left, text right |
 | **Image Width** | ~200-250px fixed |
 | **Image Height** | Auto (natural aspect ratio) |
@@ -330,18 +331,17 @@ Single-page HTML portfolio for Siddharta Govindaraj - AI Trainer & Consultant. D
 | **Description** | Body text, 16px, muted |
 | **Highlights** | Bullet points, 14px, 3 items max |
 | **Tags** | Pill badges, 12px, 6px 12px padding |
-| **Visit Button** | Outline style, "Visit Site →" / "View Book →" |
-| **Progress Dots** | 4 dots, active dot highlighted |
-| **Animation** | Fade transition (0.5s ease) |
+| **Visit Button** | Outline style, "push origin main" |
+| **Animation** | Fade/scale transition (0.5s ease) on active slide |
 | **Responsive** | Desktop: side-by-side, Mobile: stacked |
 | **Hover** | None |
 
 #### Technical Implementation
-- `scroll-snap-type: y mandatory` on container
-- Each project in `scroll-snap-align: start` section
-- Intersection Observer to detect active project
-- CSS transitions for fade effects
-- Progress dots update based on visible project
+- `scroll-snap-type: y mandatory` on inner container (400px height)
+- Each project slide is `flex: 0 0 400px` with `scroll-snap-align: start`
+- Tab navigation at top updates based on scroll position
+- Click on tabs smoothly scrolls to corresponding project
+- CSS transitions for fade/scale effects on active slide content
 
 ### 6. Testimonials Section
 
