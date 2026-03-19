@@ -54,19 +54,20 @@ Single-page HTML portfolio for Siddharta Govindaraj - AI Trainer & Consultant. D
 │                                                                 │
 │                         [ Contact Me ] [ Download Resume ]     │
 │                                                                 │
-│         ~~~ Animated gradient + floating particles ~~~         │
+│         ~~~ Animated gradient background ~~~                      │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 #### Specifications
-- **Height**: Full viewport (100vh)
+- **Height**: 400px fixed height (auto on mobile with min-height 500px)
+- **Width**: Max-width 1200px, centered with side margins, rounded corners
 - **Layout**: Horizontal flexbox - photo left, text right
-- **Background**: Animated gradient (Purple #8B5CF6 → Violet #7C3AED → Deep Blue #6366F1) with CSS-only floating particles
+- **Background**: Animated gradient (Purple #8B5CF6 → Violet #7C3AED → Deep Blue #6366F1)
 
 #### Navigation
 - **Style**: Sticky header
-- **Behavior**: Transparent initially, becomes solid on scroll
+- **Behavior**: Solid background always (visible over hero gradient)
 - **Links**: About, Skills, Timeline, Projects (Contact removed from nav)
 - **Logo**: "Siddharta G." on left
 - **Contact Icons**: Phone, Email, LinkedIn icons on right (before toggle)
@@ -97,7 +98,6 @@ Single-page HTML portfolio for Siddharta Govindaraj - AI Trainer & Consultant. D
 
 #### Animations
 - **Typing effect**: Roles type out one by one, delete, retype next
-- **Particles**: CSS-only floating particles in background
 - **Gradient**: Subtle animated gradient shift
 
 ### 2. About Section
@@ -133,10 +133,11 @@ Single-page HTML portfolio for Siddharta Govindaraj - AI Trainer & Consultant. D
 
 #### Specifications
 - **Layout**: Quote highlight box + supporting text below
+- **Width**: Max-width 1200px, centered with side margins, rounded corners
 - **Quote Box**: Large, italic, centered with subtle background styling
 - **Body Text**: Clean, readable, max-width for optimal line length
 - **CTA Button**: "Let's Talk" - filled style, links to contact section
-- **Background**: Subtle section background (lighter/darker based on theme)
+- **Background**: Subtle section background (lighter/darker based on theme), limited to content area
 - **Animation**: Fade-in on scroll using Intersection Observer
 
 ### 3. Skills Section
