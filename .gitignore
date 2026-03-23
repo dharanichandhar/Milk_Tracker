@@ -18,3 +18,4 @@ uploads/
 __marimo__/
 .vscode/
 .env
+.ruff_cache/

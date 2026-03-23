@@ -17,7 +17,7 @@ def read_root():
     return {"message": "Hello World"}
 
 
-@app.get("/vendors/{vendor_id}")
+@app.get("/api/vendors/{vendor_id}")
 def get_vendor(vendor_id: int, db: Session = Depends(get_db)):
     vendor = db.query(Vendor).filter(Vendor.id == vendor_id).first()
     if vendor is None:
@@ -25,7 +25,7 @@ def get_vendor(vendor_id: int, db: Session = Depends(get_db)):
     return {"id": vendor.id, "name": vendor.name}
 
 
-@app.post("/vendors")
+@app.post("/api/vendors")
 def create_vendor(vendor_data: VendorCreate, db: Session = Depends(get_db)):
     vendor = Vendor(name=vendor_data.name)
     db.add(vendor)
