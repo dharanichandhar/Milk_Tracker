@@ -7,7 +7,6 @@ This document provides guidelines for AI coding agents working in this repositor
 - **Project name**: TinyMagiq FDE Training
 - **Python version**: 3.13
 - **Package manager**: uv
-- **Dependencies**: psycopg2-binary (PostgreSQL database connectivity)
 
 ## Build / Run Commands
 
@@ -16,48 +15,19 @@ This document provides guidelines for AI coding agents working in this repositor
 uv sync
 ```
 
-### Run the main application
-```bash
-uv run main.py
-```
-
-### Run database test scripts
-```bash
-uv run test_db.py
-uv run script.py
-```
-
 ### Run a single Python file
 ```bash
 uv run python path/to/file.py
 ```
 
+### Run the FastAPI backend
+```bash
+uv run fastapi dev backend/app/main.py
+```
+
 ## Testing
 
 This project currently has no formal test framework. When adding tests:
-
-### Recommended test setup
-```bash
-# Install pytest
-uv add --dev pytest
-
-# Run all tests
-uv run pytest
-
-# Run a single test file
-uv run pytest tests/test_file.py
-
-# Run a specific test function
-uv run pytest tests/test_file.py::test_function_name
-
-# Run tests matching a pattern
-uv run pytest -k "test_pattern"
-```
-
-### Test file conventions
-- Test files should be named `test_*.py` or `*_test.py`
-- Test functions should be prefixed with `test_`
-- Use assertions from pytest (`assert actual == expected`)
 
 ## Code Style Guidelines
 
