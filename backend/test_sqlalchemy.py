@@ -1,18 +1,18 @@
-from backend.app.database import SessionLocal
-from backend.app.models import Customer, Vendor
+from app.database import SessionLocal
+from app.models import Customer, Vendor
 
 
 def main():
     db = SessionLocal()
 
     try:
-        vendor = Vendor(name="Acme Corp")
+        vendor = Vendor(name="Anand")
         db.add(vendor)
         db.commit()
         db.refresh(vendor)
         print(f"Created vendor: {vendor.id} - {vendor.name}")
 
-        customer = Customer(name="John Doe")
+        customer = Customer(name="Anjali")
         db.add(customer)
         db.commit()
         db.refresh(customer)

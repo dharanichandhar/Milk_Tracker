@@ -21,8 +21,13 @@ uv run python path/to/file.py
 ```
 
 ### Run the FastAPI backend
+
+The backend should always be executed from within the `backend/` directory as the current directory
+
+Then run this command below
+
 ```bash
-uv run fastapi dev backend/app/main.py
+uv run fastapi dev app/main.py
 ```
 
 ## Testing

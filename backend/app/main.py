@@ -2,8 +2,8 @@ from fastapi import Depends, FastAPI, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from backend.app.database import get_db
-from backend.app.models import Vendor
+from app.database import get_db
+from app.models import Vendor
 
 app = FastAPI()
 
