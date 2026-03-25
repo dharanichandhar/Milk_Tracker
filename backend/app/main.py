@@ -10,30 +10,6 @@ from app.models import Vendor, Customer
 
 app = FastAPI()
 
-"""
-URL Design
-
-Add a new milk vendor - POST /vendors
-Retrieve a milk vendor - GET /vendors/{vendor_id}
-
-ER Design - Entity Relationship mapping
-
-Entities
--------- 
-
-Vendor
-- id (primary key)
-- name
-
-Customer
-- id (primary key)
-- name
-
-Subscription: Vendor - Customer: Many-Many
-"""
-
-
-
 class CustomerCreate(BaseModel):
     name: str
 
@@ -86,7 +62,7 @@ def create_customer(customer_data: CustomerCreate, db: Session = Depends(get_db)
     return customer
 
 
-@app.post("/api/customer/{customer_id}/subscription")
+@app.post("/api/customers/{customer_id}/subscription")
 def create_subscription(customer_id: int, vendor_data: CustomerSubscription, db: Session = Depends(get_db)):
     customer = db.get(Customer, customer_id)
     if customer is None:
@@ -102,7 +78,7 @@ def create_subscription(customer_id: int, vendor_data: CustomerSubscription, db:
     return {"id": customer.id, "name": customer.name, "vendors": customer.vendors}
 
 
-@app.delete("/api/customer/{customer_id}/subscription/{vendor_id}")
+@app.delete("/api/customers/{customer_id}/subscription/{vendor_id}")
 def delete_subscription(customer_id: int, vendor_id: int, db: Session = Depends(get_db)):
     customer = db.get(Customer, customer_id)
     if customer is None:
