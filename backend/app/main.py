@@ -1,4 +1,7 @@
+from pathlib import Path
+
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -44,8 +47,9 @@ class CustomerSubscription(BaseModel):
 
 
 @app.get("/")
-def read_root():
-    return {"message": "Hello World"}
+def home():
+    indexPage = Path("..")/"frontend"/"index.html"
+    return FileResponse(path=indexPage, media_type="text/html")
 
 
 @app.get("/api/vendors/{vendor_id}")
