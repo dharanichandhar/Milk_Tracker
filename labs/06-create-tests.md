@@ -34,7 +34,12 @@ Use pytest and write tests for the following features:
 
 # Review
 
-Review the following topics that we covered this week
+Review the following topics
 
 - REST API: What is an API, how does it work, what is request / response header, what are status codes?
 - Alembic: What is alembic? What is a database migration? What is upgrade command? What is downgrade command? How does it work?
+- Javascript features
+  -  Template string '...'  "..." `....`  ( Python f"...." )
+  - Promises
+  - arrow function
+  - async / await <-- we will use this later (asynchronous)
