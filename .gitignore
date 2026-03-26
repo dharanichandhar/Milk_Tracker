@@ -19,3 +19,4 @@ __marimo__/
 .vscode/
 .env
 .ruff_cache/
+.pytest_cache/
