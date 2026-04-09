@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Subscribe - Milk Tracker</title>
+
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+        }
+
+        h1 {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            padding: 40px 20px;
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .vendor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .vendor-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .vendor-card img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+        }
+
+        .status { color: green; }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .alert-success { background: #d4edda; }
+        .alert-error { background: #f8d7da; }
+
+        .btn {
+            padding: 12px 24px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .form-group select {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .empty-msg {
+            color: #7f8c8d;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .vendor-card h3 {
+            margin: 12px 0 8px;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .vendor-card .status {
+            display: inline-block;
+            background: #27ae60;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+
+<body>
+    
+
+    <div id="root"></div>
+
+
+
+    <script type="text/babel">
+    function Subscription() {
+        const [subscribedVendors, setSubscribedVendors] = React.useState([])
+        const [availableVendors, setAvailableVendors] = React.useState([])
+        const [message, setMessage] = React.useState("");
+        const [success , setSuccess] = React.useState(false);
+
+        const params = new URLSearchParams(window.location.search);
+        const customerId = params.get("customer_id");
+
+        React.useEffect(() => {
+            if (params.get("success")) {
+                setMessage("Subscribed Successfully");
+                setSuccess(true);
+
+                setTimeout(() => {
+                    setMessage("")
+                }, 2000);
+            } else if (params.get("error") === "1") {
+                setMessage("Invalid Data. Please try again.");
+
+                setTimeout(() => {
+                    setMessage("")
+                }, 3000);
+            } else if (params.get("error") === "2") {
+                setMessage("You already subscribed to this vendor.");
+                setTimeout(() => {
+                    setMessage("")
+                },3000)
+            }
+            
+
+            fetch(`http://127.0.0.1:8000/api/subscription-data?customer_id=${customerId}`)
+                .then(res => res.json())
+                .then(data => {
+                    setSubscribedVendors(data.subscribed_vendors);
+                    setAvailableVendors(data.available_vendors);
+                });
+        },[]);
+
+
+        return (
+            <div className="container">
+
+                {message && (
+                    <div className={`alert ${success ? "alert-success" : "alert-error"}`}>
+                        {message}
+                    </div>
+                )}
+
+                
+                <div className="section">
+                <h2>Your Subscribed Vendors</h2>
+
+                {subscribedVendors.length > 0 ? (
+                    <div className="vendor-grid">
+                      {subscribedVendors.map(v => (
+                         <div className="vendor-card" key={v.id}>
+                            <img src={v.image_url} />
+                            <h3>{v.name}</h3>
+                            <span className="status">Subscribed</span>
+                          </div>
+                        ))}
+                    </div>
+                    ) : (
+                     <p className="empty-msg">You haven't subscribed yet</p>
+                    )}
+                </div>
+
+                
+                <div className="section">
+                <h2>Subscribe to New Vendor</h2>
+
+                {availableVendors.length > 0 ? (
+                   <form action="/api/subscriptions/create" method="POST">
+                    <input type="hidden" name="customer_id" value={customerId} />
+
+                    <div className="form-group">
+                        <select name="vendor_id" required>
+                            <option value="">-- Choose Vendor --</option>
+                            {availableVendors.map(v => (
+                                <option key={v.id} value={v.id}>
+                                    {v.id}: {v.name}
+                                </option>
+                                ))}
+                        </select>
+
+                        <button type="submit" className="btn">Subscribe</button>
+                    </div>
+                    </form>
+                    ) : (
+                        <p>All vendors subscribed</p>
+                    )}
+
+                </div>
+
+            </div>
+        );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<Subscription />);
+
+
+
+</script>
+</body>
+</html>
+
+
+
