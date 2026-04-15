@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends, Form, Request
-from fastapi.responses import RedirectResponse
+from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from passlib.context import CryptContext
-
+from app.schema.schema import CustomerSingup, CustomerLogin
 from app.database import get_db
 from app.models import Customer, CustomerLoginCrendential
 from app.utils.session import create_session, invalidate_session, validate_session
@@ -23,72 +23,74 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 @router.post("/create")
-def create_customer(
-    request: Request,
-    name: str = Form(...),
-    email: str = Form(...),
-    password: str = Form(...),
-    db: Session = Depends(get_db),
-):
-    customer = Customer(name=name)
+def create_customer(data: CustomerSingup, db: Session = Depends(get_db)):
+    customer = Customer(name=data.name)
     db.add(customer)
     db.flush()
 
-    password_hash = get_password_hash(password)
+    password_hash = get_password_hash(data.password)
 
     customer_login_credential = CustomerLoginCrendential(
-        customer_id=customer.id, email=email, password_hash=password_hash
+        customer_id=customer.id, email=data.email, password_hash=password_hash
     )
 
     db.add(customer_login_credential)
 
     try:
         db.commit()
+        db.refresh(customer_login_credential)
     except IntegrityError:
         db.rollback()
-        return RedirectResponse(url="/signup?error=1", status_code=303)
+        return {"success": False, "message": "Email already exists"}
 
-    token = create_session(db, customer.id)
-    response = RedirectResponse(
-        url=f"/subscription?customer_id={customer.id}", status_code=303
+    token = create_session(db, CustomerLoginCrendential, "customer_id", customer.id)
+
+    response = JSONResponse(
+        content={
+            "success": True,
+            "message": "Signup successfully",
+            "customer_id": customer.id,
+        }
     )
+
     response.set_cookie(
-        key="session_id",
+        key="customer_session",
         value=token,
         httponly=True,
         samesite="lax",
+        secure=False,
         max_age=86400,
     )
+
     return response
 
 
 @router.post("/login")
-def login_customer(
-    request: Request,
-    email: str = Form(...),
-    password: str = Form(...),
-    db: Session = Depends(get_db),
-):
+def customer_login(data: CustomerLogin, db: Session = Depends(get_db)):
     credential = (
         db.query(CustomerLoginCrendential)
-        .filter(CustomerLoginCrendential.email == email)
+        .filter(CustomerLoginCrendential.email == data.email)
         .first()
     )
 
-    if not credential or not verify_password(password, credential.password_hash):
-        return RedirectResponse(url="/login?error=1", status_code=401)
+    if not credential or not verify_password(data.password, credential.password_hash):
+        raise HTTPException(status_code=400, detail="Invalid email or password")
 
-    token = create_session(db, credential.customer_id)
-    response = RedirectResponse(
-        url=f"/subscription?customer_id={credential.customer_id}", status_code=303
+    token = create_session(
+        db, CustomerLoginCrendential, "customer_id", credential.customer_id
     )
+
+    response = JSONResponse(content={"success": True, "message": "Login Successfully"})
+
     response.set_cookie(
-        key="session_id",
+        key="customer_session",
         value=token,
         httponly=True,
         samesite="lax",
+        secure=False,
         max_age=86400,
     )
+
     return response
 
 
@@ -97,79 +99,44 @@ def logout_customer(
     request: Request,
     db: Session = Depends(get_db),
 ):
-    token = request.cookies.get("session_id")
-    credential = validate_session(db, token)
+    token = request.cookies.get("customer_session")
+    credential = validate_session(db, CustomerLoginCrendential, token)
 
     if credential:
-        invalidate_session(db, credential.customer_id)
+        invalidate_session(
+            db, CustomerLoginCrendential, "customer_id", credential.customer_id
+        )
 
-    response = RedirectResponse(url="/login", status_code=303)
-    response.delete_cookie(key="session_id")
+    response = JSONResponse(content={"success": True, "message": "Logout successfully"})
+    response.delete_cookie(key="customer_session")
     return response
 
 
-# @router.post("/create")
-# def create_customer(name : str = Form(...),
-#                     email : str = Form(...),
-#                      password : str = Form(...), db : Session  = Depends(get_db)):
-#     customer = Customer(name = name)
-#     db.add(customer)
-#     db.flush()
+def get_current_customer(request: Request, db: Session):
+    token = request.cookies.get("customer_session")
 
-#     password_hash = get_password_hash(password)
+    if not token:
+        raise HTTPException(status_code=401, detail="Not logged in")
 
-#     customer_login_credential = CustomerLoginCrendential(customer_id = customer.id,
-#                                                         email = email,
-#                                                          password_hash = password_hash )
+    session_data = validate_session(db, CustomerLoginCrendential, token)
 
-#     db.add(customer_login_credential)
-#     try:
-#         db.commit()
-#     except IntegrityError:
-#         db.rollback()
-#         raise HTTPException(status_code=400, detail="Email already exists")
+    if not session_data:
+        raise HTTPException(status_code=401, detail="Invalid session")
 
-#     return{
-#         "message" : "Customer created successfully",
-#         "customer_id" : customer.id
-#     }
+    customer = (
+        db.query(Customer).filter(Customer.id == session_data.customer_id).first()
+    )
+
+    if not customer:
+        raise HTTPException(status_code=404, detail="Customer not found")
+
+    return customer
 
 
-# @router.post("/login")
-# def login_customer(email: str = Form(...),
-#                    password : str = Form(...),
-#                      db:Session = Depends(get_db)):
-
-#     customer = db.query(CustomerLoginCrendential).filter(CustomerLoginCrendential.email == email).first()
-
-#     if customer is None:
-#         raise HTTPException(status_code=404, detail="Email id is incorrect")
-
-#     if not verify_password(password, customer.password_hash):
-#         raise HTTPException(status_code=401 , detail="Password is incorrect")
-
-#     return {"message" : "Logged in Successfully"}
-
-
-# @router.get("/get_all_customer")
-# def get_all_customers(db: Session = Depends(get_db)):
-#     customers = db.query(Customer).order_by(Customer.name).all()
-
-#     return [
-#         {
-#             "id" : c.id, "name" : c.name }
-#             for c in customers
-#     ]
-
-# @router.get("particular")
-# def get_customer(customer_id : int , db : Session = Depends(get_db)):
-#     customer = db.query(Customer).filter(Customer.id == customer_id).first()
-
-#     if not customer :
-#         raise HTTPException(status_code=404, detail = "Customer not found")
-
-#     return {
-#         "id" : customer.id,
-#         "name" : customer.name,
-#         "vendors" : customer.vendors
-#     }
+@router.get("/me")
+def get_customer_me(request: Request, db: Session = Depends(get_db)):
+    try:
+        customer = get_current_customer(request, db)
+        return {"logged_in": True, "customer_id": customer.id, "name": customer.name}
+    except HTTPException:
+        return {"logged_in": False}

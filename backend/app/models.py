@@ -35,6 +35,21 @@ class Vendor(Base):
         back_populates="vendors",
     )
 
+class VendorLoginCredential(Base):
+    __tablename__ = "vendor_login_credentials"
+
+    vendor_id = Column(
+        Integer,
+        ForeignKey(Vendor.id, ondelete="CASCADE"),
+        primary_key=True,
+        index=True,
+    )
+    email = Column(CITEXT, unique=True, nullable = False)
+    password_hash = Column(String, nullable = False)
+
+    session_token = Column(String, nullable = True)
+    session_expires_at = Column(DateTime(timezone=True), nullable = True)
+
 
 class Customer(Base):
     __tablename__ = "customers"

@@ -13,7 +13,7 @@ def get_session_token(request: Request) -> str | None:
 def get_current_customer(
     request: Request,
     db: Session = Depends(get_db),
-) -> Customer:
+    ) -> Customer:
     token = get_session_token(request)
     credential = validate_session(db, token)
 

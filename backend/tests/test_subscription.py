@@ -1,106 +1,199 @@
+import uuid
+import os
+import pytest
 from fastapi.testclient import TestClient
 from app.main import app
 
-
-def create_vendor(client, name="Test_Vendor"):
-    response = client.post("/api/vendors/create", data={"name": name})
-    return response.json()["id"]
-
-def create_customer(client, name="Test_customer"):
-    response = client.post("/api/customers/create" , data ={"name": name})
-    return response.json()["id"]
+client = TestClient(app)
 
 
-def test_get_particular_vendor():
-    with TestClient(app) as client:
-        
-        vendor_id = create_vendor(client , "mani")
-
-        response = client.get(f"/api/vendors/particular_vendor?vendor_id={vendor_id}")
-
-        assert response.status_code == 200
-        data = response.json()
-
-        assert data["id"] == vendor_id
-        assert data["name"] == "mani"
-        
-
-def test_get_particular_customer():
-    with TestClient(app) as client:
-
-        customer_id = create_customer(client , "vijay")
-
-        response = client.get(f"/api/customers/particular?customer_id={customer_id}")
-
-        assert response.status_code == 200
-        data = response.json()
-
-        assert data["id"] == customer_id
-        assert data["name"] == "vijay"
+def unique_email(prefix):
+    return f"{prefix}_{uuid.uuid4()}@test.com"
 
 
 
-def test_all_vendors():
-    with TestClient(app) as client:
-        create_vendor(client, "dharani")
-        create_vendor(client, "chandhar")
-        create_vendor(client, "sangar")
-
-        response = client.get("/api/vendors")
-        assert response.status_code == 200
-        data = response.json()
-
-        names = [V["name"] for V in data]
-        assert all(name in names for name in ["dharani", "chandhar", "sangar"])
+def create_customer(name, email):
+    response = client.post(
+        "/api/customers/create",
+        json={"name": name, "email": email, "password": "123456"}
+    )
+    assert response.status_code == 200
+    return response.json()["customer_id"]
 
 
-def test_all_custome():
-    with TestClient(app) as client:
-        create_customer(client, "lena")
-        create_customer(client, "stephen")
-        create_customer(client, "Aakash")
-
-        response = client.get("/api/customers")
-        assert response.status_code == 200
-        data = response.json()
-
-        names = [C["name"] for C in data]
-        assert all(name in names for name in ["lena", "stephen", "Aakash"])
+def login_customer(email):
+    response = client.post(
+        "/api/customers/login",
+        json={"email": email, "password": "123456"}
+    )
+    assert response.status_code == 200
+    return response.cookies
 
 
-def test_create_customer():
-    with TestClient(app) as client:
-        response = client.post("/api/customers/create" , data={"name" : "Devan"})
-        assert response.status_code == 200
-
-        data =  response.json()
-
-        assert "id" in data
-        assert data["name"] == "Devan"
+def logout_customer(cookies):
+    response = client.post(
+        "/api/customers/logout",
+        cookies=cookies
+    )
+    return response
 
 
-def test_create_vendor():
-    with TestClient(app) as client:
-        response = client.post("/api/vendors/create" , data ={"name" : "Raj"})
-        assert response.status_code == 200
+def create_vendor(name, email):
+    file_path = "test.jpg"
 
-        data = response.json()
+    if not os.path.exists(file_path):
+        raise Exception(" test.jpg not found in project root")
 
-        assert "id" in data
-        assert data["name"] == "Raj"
+    with open(file_path, "rb") as f:
+        response = client.post(
+            "/api/vendors/create",
+            data={"name": name, "email": email, "password": "123456"},
+            files={"image": ("test.jpg", f, "image/jpeg")}
+        )
 
-
-
-
-
-# def create_vendor(client, name="Test_Vendor"):
-#     response = client.post("/api/vendors", json={"name": name})
-#     return response.json()["id"]
+    assert response.status_code == 200
+    return response.json()["vendor"]["id"]
 
 
-# def create_customer(client, name="Test_Customer"):
-#     response = client.post("/api/customers", json={"name": name})
-#     return response.json()["id"]
+def login_vendor(email):
+    response = client.post(
+        "/api/vendors/login",
+        json={"email": email, "password": "123456"}
+    )
+    assert response.status_code == 200
+    return response.cookies
+
+
+def get_vendor_dashboard(cookies):
+    return client.get(
+        "/api/vendors/dashboard",
+        cookies=cookies
+    )
+
+
+
+def test_customer_signup():
+    email = unique_email("cust_signup")
+
+    res = create_customer("Dharani", email)
+
+    assert res is not None
+
+
+def test_customer_login_logout():
+    email = unique_email("cust_login")
+
+    create_customer("Dharani", email)
+
+    cookies = login_customer(email)
+
+    res = logout_customer(cookies)
+
+    assert res.status_code == 200
+    assert res.json()["success"] is True
+
+
+def test_vendor_signup():
+    email = unique_email("vendor_signup")
+
+    vendor_id = create_vendor("Shop1", email)
+
+    assert isinstance(vendor_id, int)
+
+
+def test_vendor_login_dashboard():
+    email = unique_email("vendor_login")
+
+    vendor_id = create_vendor("Shop2", email)
+
+    cookies = login_vendor(email)
+
+    res = get_vendor_dashboard(cookies)
+
+    assert res.status_code == 200
+    assert res.json()["vendor_id"] == vendor_id
+
+
+def test_create_subscription():
+    vendor_email = unique_email("sub_vendor")
+    customer_email = unique_email("sub_customer")
+
+    vendor_id = create_vendor("SubShop", vendor_email)
+    customer_id = create_customer("SubUser", customer_email)
+
+    response = client.post(
+        "/api/subscriptions/create",
+        json={
+            "customer_id": customer_id,
+            "vendor_id": vendor_id
+        }
+    )
+
+    assert response.status_code == 200
+    assert response.json()["success"] is True
+
+
+def test_duplicate_subscription():
+    vendor_email = unique_email("dup_vendor")
+    customer_email = unique_email("dup_customer")
+
+    vendor_id = create_vendor("DupShop", vendor_email)
+    customer_id = create_customer("DupUser", customer_email)
+
+    client.post(
+        "/api/subscriptions/create",
+        json={"customer_id": customer_id, "vendor_id": vendor_id}
+    )
+
+    response = client.post(
+        "/api/subscriptions/create",
+        json={"customer_id": customer_id, "vendor_id": vendor_id}
+    )
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Already subscribed"
+
+
+def test_subscription_not_found():
+    response = client.post(
+        "/api/subscriptions/create",
+        json={"customer_id": 99999, "vendor_id": 99999}
+    )
+
+    assert response.status_code == 404
+
+
+def test_get_all_subscriptions():
+    vendor_id = create_vendor("ListShop", unique_email("list_vendor"))
+    customer_id = create_customer("ListUser", unique_email("list_customer"))
+
+    client.post(
+        "/api/subscriptions/create",
+        json={"customer_id": customer_id, "vendor_id": vendor_id}
+    )
+
+    response = client.get("/api/subscriptions/all")
+
+    assert response.status_code == 200
+
+    data = response.json()
+    assert isinstance(data, list)
+    assert len(data) >= 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # def test_add_subscription():
