@@ -6,10 +6,9 @@ import "../../styles/auth.css";
 interface SignupFormProps {
     mode: "customer" | "vendor";
     onSwitchToLogin: () => void;
-    onSuccess?: () => void;
 }
 
-const SignupForm = ({ mode, onSwitchToLogin, onSuccess }: SignupFormProps) => {
+const SignupForm = ({ mode, onSwitchToLogin }: SignupFormProps) => {
     const navigate = useNavigate();
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");

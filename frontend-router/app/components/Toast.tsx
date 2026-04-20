@@ -8,7 +8,7 @@ interface ToastProps {
     onClose?: () => void;
 }
 
-const Toast = ({ message, type = "success", duration = 3000, onClose }: ToastProps) => {
+const Toast = ({ message, type = "success", duration = 2000, onClose }: ToastProps) => {
     const [visible, setVisible] = useState(true);
 
     useEffect(() => {
