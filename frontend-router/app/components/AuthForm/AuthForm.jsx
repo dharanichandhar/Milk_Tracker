@@ -2,11 +2,7 @@ import { useState } from "react";
 import LoginForm from "./LoginForm";
 import SignupForm from "./SignupForm";
 
-interface AuthFormProps {
-    mode: "customer" | "vendor";
-}
-
-const AuthForm = ({ mode }: AuthFormProps) => {
+const AuthForm = ({ mode }) => {
     const [isLogin, setIsLogin] = useState(true);
 
     return isLogin ? (

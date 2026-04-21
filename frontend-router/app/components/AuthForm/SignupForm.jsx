@@ -3,37 +3,32 @@ import { useNavigate } from "react-router";
 import { showToast } from "../Toast";
 import "../../styles/auth.css";
 
-interface SignupFormProps {
-    mode: "customer" | "vendor";
-    onSwitchToLogin: () => void;
-}
-
-const SignupForm = ({ mode, onSwitchToLogin }: SignupFormProps) => {
+const SignupForm = ({ mode, onSwitchToLogin }) => {
     const navigate = useNavigate();
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [image, setImage] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string>("");
+    const [image, setImage] = useState(null);
+    const [imagePreview, setImagePreview] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
     const API_BASE = mode === "customer" ? "/api/customers" : "/api/vendors";
     const userType = mode === "customer" ? "Customer" : "Vendor";
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageChange = (e) => {
         const file = e.target.files?.[0];
         if (file) {
             setImage(file);
             const reader = new FileReader();
             reader.onload = () => {
-                setImagePreview(reader.result as string);
+                setImagePreview(reader.result);
             };
             reader.readAsDataURL(file);
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError("");
@@ -67,7 +62,7 @@ const SignupForm = ({ mode, onSwitchToLogin }: SignupFormProps) => {
                 formDataToSend.append("name", name);
                 formDataToSend.append("email", email);
                 formDataToSend.append("password", password);
-                formDataToSend.append("image", image as File);
+                formDataToSend.append("image", image);
 
                 const response = await fetch(`${API_BASE}/create`, {
                     method: "POST",

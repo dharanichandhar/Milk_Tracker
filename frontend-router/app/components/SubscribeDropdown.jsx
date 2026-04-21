@@ -1,20 +1,8 @@
 import { useState } from "react";
 import { showToast } from "./Toast";
 
-interface Vendor {
-    id: number;
-    name: string;
-    image_url?: string;
-}
-
-interface SubscribeDropdownProps {
-    vendors: Vendor[];
-    onSubscribe: (vendorId: number) => Promise<void>;
-    loading?: boolean;
-}
-
-const SubscribeDropdown = ({ vendors, onSubscribe, loading }: SubscribeDropdownProps) => {
-    const [selectedVendorId, setSelectedVendorId] = useState<number | "">("");
+const SubscribeDropdown = ({ vendors, onSubscribe, loading }) => {
+    const [selectedVendorId, setSelectedVendorId] = useState("");
 
     const handleSubscribe = async () => {
         if (!selectedVendorId) {
@@ -43,7 +31,7 @@ const SubscribeDropdown = ({ vendors, onSubscribe, loading }: SubscribeDropdownP
             <select
                 className="subscribe-dropdown"
                 value={selectedVendorId}
-                onChange={(e) => setSelectedVendorId(e.target.value as unknown as number)}
+                onChange={(e) => setSelectedVendorId(e.target.value)}
             >
                 <option value="">Select a vendor</option>
                 {vendors.map((vendor) => (

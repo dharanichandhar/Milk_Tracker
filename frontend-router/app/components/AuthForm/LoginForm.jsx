@@ -3,13 +3,7 @@ import { useNavigate } from "react-router";
 import { showToast } from "../Toast";
 import "../../styles/auth.css";
 
-interface LoginFormProps {
-    mode: "customer" | "vendor";
-    onSwitchToSignup: () => void;
-    onSuccess?: () => void;
-}
-
-const LoginForm = ({ mode, onSwitchToSignup, onSuccess }: LoginFormProps) => {
+const LoginForm = ({ mode, onSwitchToSignup, onSuccess }) => {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -19,7 +13,7 @@ const LoginForm = ({ mode, onSwitchToSignup, onSuccess }: LoginFormProps) => {
     const API_BASE = mode === "customer" ? "/api/customers" : "/api/vendors";
     const userType = mode === "customer" ? "Customer" : "Vendor";
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError("");

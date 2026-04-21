@@ -2,18 +2,11 @@ import { useState, useCallback } from "react";
 import { useNavigate } from "react-router";
 import { showToast } from "../Toast";
 
-interface UserData {
-    logged_in: boolean;
-    customer_id?: number;
-    vendor_id?: number;
-    name?: string;
-}
-
 export const useAuth = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
 
-    const checkCustomerAuth = useCallback(async (): Promise<UserData | false> => {
+    const checkCustomerAuth = useCallback(async () => {
         try {
             const response = await fetch("/api/customers/me", {
                 credentials: "include",
@@ -34,7 +27,7 @@ export const useAuth = () => {
         }
     }, []);
 
-    const checkVendorAuth = useCallback(async (): Promise<UserData | false> => {
+    const checkVendorAuth = useCallback(async () => {
         try {
             const response = await fetch("/api/vendors/me", {
                 credentials: "include",

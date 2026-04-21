@@ -1,14 +1,7 @@
 import { useEffect, useState } from "react";
 import "./Toast.css";
 
-interface ToastProps {
-    message: string;
-    type?: "success" | "error" | "info";
-    duration?: number;
-    onClose?: () => void;
-}
-
-const Toast = ({ message, type = "success", duration = 2000, onClose }: ToastProps) => {
+const Toast = ({ message, type = "success", duration = 2000, onClose }) => {
     const [visible, setVisible] = useState(true);
 
     useEffect(() => {
@@ -36,32 +29,32 @@ const Toast = ({ message, type = "success", duration = 2000, onClose }: ToastPro
 };
 
 export const showToast = {
-    success: (message: string) => {
+    success: (message) => {
         window.dispatchEvent(new CustomEvent("toast", { detail: { message, type: "success" } }));
     },
-    error: (message: string) => {
+    error: (message) => {
         window.dispatchEvent(new CustomEvent("toast", { detail: { message, type: "error" } }));
     },
-    info: (message: string) => {
+    info: (message) => {
         window.dispatchEvent(new CustomEvent("toast", { detail: { message, type: "info" } }));
     },
 };
 
 export const ToastContainer = () => {
-    const [toasts, setToasts] = useState<Array<{ id: number; message: string; type: string }>>([]);
+    const [toasts, setToasts] = useState([]);
 
     useEffect(() => {
-        const handleToast = (e: CustomEvent) => {
+        const handleToast = (e) => {
             const { message, type } = e.detail;
             const id = Date.now();
             setToasts((prev) => [...prev, { id, message, type }]);
         };
 
-        window.addEventListener("toast", handleToast as EventListener);
-        return () => window.removeEventListener("toast", handleToast as EventListener);
+        window.addEventListener("toast", handleToast);
+        return () => window.removeEventListener("toast", handleToast);
     }, []);
 
-    const removeToast = (id: number) => {
+    const removeToast = (id) => {
         setToasts((prev) => prev.filter((t) => t.id !== id));
     };
 
@@ -71,7 +64,7 @@ export const ToastContainer = () => {
                 <Toast
                     key={toast.id}
                     message={toast.message}
-                    type={toast.type as "success" | "error" | "info"}
+                    type={toast.type}
                     onClose={() => removeToast(toast.id)}
                 />
             ))}

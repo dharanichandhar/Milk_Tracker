@@ -1,16 +1,6 @@
 import { showToast } from "./Toast";
 
-interface VendorCardProps {
-    vendor: {
-        id: number;
-        name: string;
-        image_url?: string;
-    };
-    onUnsubscribe: (vendorId: number) => Promise<void>;
-    loading?: boolean;
-}
-
-const VendorCard = ({ vendor, onUnsubscribe, loading }: VendorCardProps) => {
+const VendorCard = ({ vendor, onUnsubscribe, loading }) => {
     const handleUnsubscribe = async () => {
         if (window.confirm(`Are you sure you want to unsubscribe from ${vendor.name}?`)) {
             try {

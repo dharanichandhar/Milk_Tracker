@@ -1,21 +1,10 @@
 import { useState, useCallback } from "react";
 import { showToast } from "../Toast";
 
-interface Vendor {
-    id: number;
-    name: string;
-    image_url?: string;
-}
-
-interface SubscriptionData {
-    subscribed_vendors: Vendor[];
-    available_vendors: Vendor[];
-}
-
 export const useSubscription = () => {
     const [loading, setLoading] = useState(false);
 
-    const fetchMyVendors = useCallback(async (): Promise<Vendor[]> => {
+    const fetchMyVendors = useCallback(async () => {
         try {
             const response = await fetch("/api/subscriptions/my-vendors", {
                 credentials: "include",
@@ -27,19 +16,19 @@ export const useSubscription = () => {
         }
     }, []);
 
-    const fetchAvailableVendors = useCallback(async (): Promise<Vendor[]> => {
+    const fetchAvailableVendors = useCallback(async () => {
         try {
             const response = await fetch("/api/subscriptions/subscription-data", {
                 credentials: "include",
             });
-            const data: SubscriptionData = await response.json();
+            const data = await response.json();
             return data.available_vendors || [];
         } catch {
             return [];
         }
     }, []);
 
-    const subscribe = useCallback(async (vendorId: number): Promise<boolean> => {
+    const subscribe = useCallback(async (vendorId) => {
         setLoading(true);
         try {
             const response = await fetch("/api/subscriptions/create", {
@@ -65,7 +54,7 @@ export const useSubscription = () => {
         }
     }, []);
 
-    const unsubscribe = useCallback(async (vendorId: number): Promise<boolean> => {
+    const unsubscribe = useCallback(async (vendorId) => {
         setLoading(true);
         try {
             const response = await fetch(`/api/subscriptions/unsubscribe/${vendorId}`, {
