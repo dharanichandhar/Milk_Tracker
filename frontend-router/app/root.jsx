@@ -1,5 +1,6 @@
-import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+import { isRouteErrorResponse, Links, Meta, Outlet, Scripts } from "react-router";
 import "./app.css";
+
 
 export function Layout({ children }) {
     return (
@@ -12,7 +13,6 @@ export function Layout({ children }) {
             </head>
             <body>
                 {children}
-                <ScrollRestoration />
                 <Scripts />
             </body>
         </html>
@@ -23,31 +23,26 @@ export default function Root() {
     return <Outlet />;
 }
 
+
+
+
 export function ErrorBoundary({ error }) {
     let message = "Oops!";
     let details = "An unexpected error occurred.";
-    let stack;
+
 
     if (isRouteErrorResponse(error)) {
         message = error.status === 404 ? "404" : "Error";
-        details =
-            error.status === 404
-                ? "The requested page could not be found."
-                : error.statusText || details;
+        details =error.status === 404 ? "The requested page could not be found." : error.statusText || details;
+
     } else if (import.meta.env.DEV && error && error instanceof Error) {
         details = error.message;
-        stack = error.stack;
     }
 
     return (
         <main className="error-container">
             <h1>{message}</h1>
             <p>{details}</p>
-            {stack && (
-                <pre>
-                    <code>{stack}</code>
-                </pre>
-            )}
         </main>
     );
 }
