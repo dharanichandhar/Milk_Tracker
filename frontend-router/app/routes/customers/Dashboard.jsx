@@ -1,7 +1,6 @@
 import { useLoaderData, useNavigation, Navigate } from "react-router";
 import { useState } from "react";
 import VendorCard from "../../components/VendorCard";
-import SubscribeDropdown from "../../components/SubscribeDropdown";
 import "../../styles/dashboard.css";
 
 export async function clientLoader() {
@@ -41,6 +40,7 @@ export default function CustomerDashboard() {
     const loaderData = useLoaderData();
     const navigation = useNavigation();
     const [actionLoading, setActionLoading] = useState(false);
+    const [selectedVendor, setSelectedVendor] = useState("");
 
     if (loaderData.shouldRedirect) {
         return <Navigate to={loaderData.redirectTo} replace />;
@@ -73,7 +73,12 @@ export default function CustomerDashboard() {
         }
     };
 
-    const handleSubscribe = async (vendorId) => {
+    const handleSubscribe = async () => {
+        if (!selectedVendor) {
+            alert("Please select a vendor");
+            return;
+        }
+
         setActionLoading(true);
         try {
             const res = await fetch("/api/subscriptions/create", {
@@ -82,7 +87,7 @@ export default function CustomerDashboard() {
                     "Content-Type": "application/json",
                 },
                 credentials: "include",
-                body: JSON.stringify({ vendor_id: vendorId }),
+                body: JSON.stringify({ vendor_id: Number(selectedVendor) }),
             });
 
             if (res.ok) {
@@ -139,11 +144,27 @@ export default function CustomerDashboard() {
                     </div>
 
                     {loaderData.available_vendors.length > 0 ? (
-                        <SubscribeDropdown
-                            vendors={loaderData.available_vendors}
-                            onSubscribe={handleSubscribe}
-                            loading={isSubmitting}
-                        />
+                        <div className="section-actions">
+                            <select
+                                className="subscribe-dropdown"
+                                value={selectedVendor}
+                                onChange={(e) => setSelectedVendor(e.target.value)}
+                            >
+                                <option value="">Select a vendor</option>
+                                {loaderData.available_vendors.map((vendor) => (
+                                    <option key={vendor.id} value={vendor.id}>
+                                        {vendor.name}
+                                    </option>
+                                ))}
+                            </select>
+                            <button
+                                className="subscribe-btn"
+                                onClick={handleSubscribe}
+                                disabled={isSubmitting || !selectedVendor}
+                            >
+                                {isSubmitting ? "Subscribing..." : "Subscribe"}
+                            </button>
+                        </div>
                     ) : (
                         <div className="empty-state">
                             <p>No more vendors available to subscribe</p>

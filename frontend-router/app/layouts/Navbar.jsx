@@ -1,17 +1,12 @@
-import { Outlet, useLoaderData, useRevalidator, Link } from "react-router";
-import { useEffect } from "react";
+import { Outlet, useLoaderData, useRevalidator, Link, NavLink, } from "react-router";
 import { ToastContainer } from "../components/Toast";
 import "../styles/navbar.css";
 
 export async function clientLoader() {
     try {
         const [customerRes, vendorRes] = await Promise.all([
-            fetch("/api/customers/me", { 
-                credentials: "include" 
-            }),
-            fetch("/api/vendors/me", { 
-                credentials: "include" 
-            }),
+            fetch("/api/customers/me", { credentials: "include" }),
+            fetch("/api/vendors/me", { credentials: "include" }),
         ]);
 
         const customer = await customerRes.json();
@@ -43,17 +38,13 @@ export async function clientLoader() {
 
 clientLoader.hydrate = true;
 
+export function shouldRevalidate() {
+    return true;
+}
+
 export default function NavbarLayout() {
     const loaderData = useLoaderData();
     const revalidator = useRevalidator();
-
-    useEffect(() => {
-        const handleFocus = () => {
-            revalidator.revalidate();
-        };
-        window.addEventListener("focus", handleFocus);
-        return () => window.removeEventListener("focus", handleFocus);
-    }, [revalidator]);
 
     const handleLogout = async () => {
         try {
@@ -68,80 +59,72 @@ export default function NavbarLayout() {
                     credentials: "include",
                 });
             }
+
             revalidator.revalidate();
         } catch (err) {
             console.error("Logout failed", err);
         }
     };
 
-    const pathname = window.location.pathname;
-    const isHome = pathname === "/";
-    const isCustomerPage = pathname.includes("/customers");
-    const isVendorPage = pathname.includes("/vendors");
-    const isCustomerDashboard = pathname === "/customers/dashboard";
-    const isVendorDashboard = pathname === "/vendors/dashboard";
-
     return (
         <>
             <nav className="navbar">
-                <Link to="/" className="navbar-brand">
-                    Milk Tracker
-                </Link>
+                <Link to="/" className="navbar-brand"> Milk Tracker   </Link>
 
                 <div className="navbar-links">
-                    <Link
-                        to="/"
-                        className={`navbar-link ${isHome ? "active" : ""}`}
-                    >
+
+            
+                    <NavLink  to="/" className={({ isActive }) =>
+                            `navbar-link ${isActive ? "active" : ""}` } >
                         Home
-                    </Link>
+                    </NavLink>
 
+                   
                     {!loaderData.logged_in && (
-                        <Link
-                            to="/customers/login"
-                            className={`navbar-link ${isCustomerPage ? "active" : ""}`}
-                        >
-                            Customer
-                        </Link>
+                        <>
+                            <NavLink to="/customers/login" className={({ isActive }) =>
+                                    `navbar-link ${isActive ? "active" : ""}`}>
+                                Customer
+                            </NavLink>
+
+                            <NavLink to="/vendors/login" className={({ isActive }) =>
+                                    `navbar-link ${isActive ? "active" : ""}`}>
+                                Vendor
+                            </NavLink>
+                        </>
                     )}
 
-                    {!loaderData.logged_in && (
-                        <Link
-                            to="/vendors/login"
-                            className={`navbar-link ${isVendorPage ? "active" : ""}`}
-                        >
-                            Vendor
-                        </Link>
-                    )}
 
-                    {loaderData.logged_in && loaderData.userType === "customer" && (
-                        <Link
-                            to="/customers/dashboard"
-                            className={`navbar-link ${isCustomerDashboard ? "active" : ""}`}
-                        >
-                            Customer Dashboard
-                        </Link>
-                    )}
+                    {loaderData.logged_in &&
+                        loaderData.userType === "customer" && (
+                            <NavLink to="/customers/dashboard" className={({ isActive }) =>
+                                    `navbar-link ${isActive ? "active" : ""}`}>
+                                Customer Dashboard
+                            </NavLink>
+                        )}
 
-                    {loaderData.logged_in && loaderData.userType === "vendor" && (
-                        <Link
-                            to="/vendors/dashboard"
-                            className={`navbar-link ${isVendorDashboard ? "active" : ""}`}
-                        >
-                            Vendor Dashboard
-                        </Link>
-                    )}
+                    
+                    {loaderData.logged_in &&
+                        loaderData.userType === "vendor" && (
+                            <NavLink to="/vendors/dashboard" className={({ isActive }) =>
+                                    `navbar-link ${isActive ? "active" : ""}`}>
+                                Vendor Dashboard
+                            </NavLink>
+                        )}
 
                     {loaderData.logged_in && (
                         <div className="navbar-user">
-                            <span className="navbar-username">{loaderData.name}</span>
-                            <button className="navbar-logout" onClick={handleLogout}>
+                            <span className="navbar-username">
+                                {loaderData.name}
+                            </span>
+                            <button className="navbar-logout"  onClick={handleLogout}>
                                 Logout
                             </button>
                         </div>
                     )}
                 </div>
             </nav>
+
             <ToastContainer />
             <Outlet />
         </>

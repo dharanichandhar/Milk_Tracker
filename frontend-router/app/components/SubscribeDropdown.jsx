@@ -1,18 +1,15 @@
-import { useState } from "react";
 import { showToast } from "./Toast";
 
-const SubscribeDropdown = ({ vendors, onSubscribe, loading }) => {
-    const [selectedVendorId, setSelectedVendorId] = useState("");
-
+const SubscribeDropdown = ({ vendors, onSubscribe, loading, value, onChange }) => {
     const handleSubscribe = async () => {
-        if (!selectedVendorId) {
+        if (!value) {
             showToast.error("Please select a vendor");
             return;
         }
 
         try {
-            await onSubscribe(Number(selectedVendorId));
-            setSelectedVendorId("");
+            await onSubscribe(Number(value));
+            onChange("");
         } catch (err) {
             showToast.error(err instanceof Error ? err.message : "Failed to subscribe");
         }
@@ -30,8 +27,8 @@ const SubscribeDropdown = ({ vendors, onSubscribe, loading }) => {
         <div className="section-actions">
             <select
                 className="subscribe-dropdown"
-                value={selectedVendorId}
-                onChange={(e) => setSelectedVendorId(e.target.value)}
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
             >
                 <option value="">Select a vendor</option>
                 {vendors.map((vendor) => (
@@ -43,7 +40,7 @@ const SubscribeDropdown = ({ vendors, onSubscribe, loading }) => {
             <button
                 className="subscribe-btn"
                 onClick={handleSubscribe}
-                disabled={loading || !selectedVendorId}
+                disabled={loading || !value}
             >
                 {loading ? "Subscribing..." : "Subscribe"}
             </button>

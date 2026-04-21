@@ -182,3 +182,9 @@
 .auth-switch-link:hover {
     opacity: 0.8;
 }
+.form-input[type="file"] {
+    padding: 10px;
+    background: #f8f9fa;
+    border: 1px dashed #aaa;
+    cursor: pointer;
+}
