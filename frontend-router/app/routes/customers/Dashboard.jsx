@@ -1,12 +1,11 @@
-import { useLoaderData, useNavigation, Navigate } from "react-router";
+import {useLoaderData, useNavigation, Navigate, useFetcher} from "react-router";
 import { useState } from "react";
 import VendorCard from "../../components/VendorCard";
 import "../../styles/dashboard.css";
 
+
 export async function clientLoader() {
-    const customerRes = await fetch("/api/customers/me", {
-        credentials: "include",
-    });
+    const customerRes = await fetch("/api/customers/me", { credentials: "include",});
     const customerData = await customerRes.json();
 
     if (!customerData.logged_in) {
@@ -20,99 +19,92 @@ export async function clientLoader() {
 
     return {
         shouldRedirect: false,
-        logged_in: true,
-        customer_id: customerData.customer_id,
         customer_name: customerData.name,
         subscribed_vendors: subsData.subscribed_vendors || [],
-        available_vendors: subsData.available_vendors || [],
-    };
+        available_vendors: subsData.available_vendors
+            ? [...subsData.available_vendors].sort((a, b) =>a.name.localeCompare(b.name)): [],
+        };
 }
 
 clientLoader.hydrate = true;
 
-export function meta() {
-    return [
-        { title: "Customer Dashboard - TinyMagiq" },
-    ];
+export async function clientAction({ request }) {
+    const formData = await request.formData();
+
+    const type = formData.get("type");
+    const vendorId = formData.get("vendorId");
+
+    try {
+        if (type === "unsubscribe") {
+            await fetch(`/api/subscriptions/unsubscribe/${vendorId}`, {
+                method: "POST",
+                credentials: "include",
+            });
+        }
+
+        if (type === "subscribe") {
+            await fetch("/api/subscriptions/create", {
+                method: "POST",
+                headers: {"Content-Type": "application/json",},
+                credentials: "include",
+                body: JSON.stringify({vendor_id: Number(vendorId),}),
+            });
+        }
+        return { success: true };
+    } catch (err) {
+        return { success: false };
+    }
 }
 
 export default function CustomerDashboard() {
     const loaderData = useLoaderData();
     const navigation = useNavigation();
-    const [actionLoading, setActionLoading] = useState(false);
+    const fetcher = useFetcher();
+
     const [selectedVendor, setSelectedVendor] = useState("");
 
     if (loaderData.shouldRedirect) {
         return <Navigate to={loaderData.redirectTo} replace />;
     }
 
-    const isSubmitting = navigation.state === "submitting" || actionLoading;
+    const isSubmitting =
+        navigation.state === "submitting" ||
+        fetcher.state === "submitting";
 
-    const handleUnsubscribe = async (vendorId) => {
-        if (!confirm(`Are you sure you want to unsubscribe from this vendor?`)) {
-            return;
-        }
-
-        setActionLoading(true);
-        try {
-            const res = await fetch(`/api/subscriptions/unsubscribe/${vendorId}`, {
-                method: "POST",
-                credentials: "include",
-            });
-
-            if (res.ok) {
-                window.location.reload();
-            } else {
-                const error = await res.json();
-                alert(error.detail || "Failed to unsubscribe");
-            }
-        } catch (err) {
-            alert("Failed to unsubscribe");
-        } finally {
-            setActionLoading(false);
-        }
+    const handleUnsubscribe = (vendorId) => {
+        fetcher.submit(
+            { type: "unsubscribe", vendorId },
+            { method: "post" }
+        );
     };
 
-    const handleSubscribe = async () => {
+
+    const handleSubscribe = () => {
         if (!selectedVendor) {
             alert("Please select a vendor");
             return;
         }
-
-        setActionLoading(true);
-        try {
-            const res = await fetch("/api/subscriptions/create", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify({ vendor_id: Number(selectedVendor) }),
-            });
-
-            if (res.ok) {
-                window.location.reload();
-            } else {
-                const error = await res.json();
-                alert(error.detail || "Failed to subscribe");
-            }
-        } catch (err) {
-            alert("Failed to subscribe");
-        } finally {
-            setActionLoading(false);
-        }
+        fetcher.submit(
+            { type: "subscribe", vendorId: selectedVendor },
+            { method: "post" }
+        );
     };
+
 
     return (
         <div className="dashboard-page">
             <div className="dashboard-container">
+
                 <div className="dashboard-header">
                     <h1 className="dashboard-welcome">
                         Welcome, <span>{loaderData.customer_name}</span>!
                     </h1>
-                    <p className="dashboard-subtitle">Your customer dashboard</p>
+                    <p className="dashboard-subtitle">
+                        Your customer dashboard
+                    </p>
                 </div>
 
+                {/* SUBSCRIBED */}
                 <div className="dashboard-section">
                     <div className="section-header">
                         <h2 className="section-title">
@@ -130,7 +122,9 @@ export default function CustomerDashboard() {
                                 <VendorCard
                                     key={vendor.id}
                                     vendor={vendor}
-                                    onUnsubscribe={() => handleUnsubscribe(vendor.id)}
+                                    onUnsubscribe={() =>
+                                        handleUnsubscribe(vendor.id)
+                                    }
                                     loading={isSubmitting}
                                 />
                             ))}
@@ -140,7 +134,9 @@ export default function CustomerDashboard() {
 
                 <div className="dashboard-section">
                     <div className="section-header">
-                        <h2 className="section-title">Subscribe to New Vendors</h2>
+                        <h2 className="section-title">
+                            Subscribe to New Vendors
+                        </h2>
                     </div>
 
                     {loaderData.available_vendors.length > 0 ? (
@@ -148,7 +144,9 @@ export default function CustomerDashboard() {
                             <select
                                 className="subscribe-dropdown"
                                 value={selectedVendor}
-                                onChange={(e) => setSelectedVendor(e.target.value)}
+                                onChange={(e) =>
+                                    setSelectedVendor(e.target.value)
+                                }
                             >
                                 <option value="">Select a vendor</option>
                                 {loaderData.available_vendors.map((vendor) => (
@@ -157,6 +155,7 @@ export default function CustomerDashboard() {
                                     </option>
                                 ))}
                             </select>
+
                             <button
                                 className="subscribe-btn"
                                 onClick={handleSubscribe}
@@ -171,6 +170,7 @@ export default function CustomerDashboard() {
                         </div>
                     )}
                 </div>
+
             </div>
         </div>
     );

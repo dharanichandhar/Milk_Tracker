@@ -36,7 +36,7 @@ clientLoader.hydrate = true;
 
 export function meta() {
     return [
-        { title: "Vendor Dashboard - TinyMagiq" },
+        { title: "Vendor Dashboard" },
     ];
 }
 
