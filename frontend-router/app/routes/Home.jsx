@@ -1,21 +1,24 @@
-import "../styles/home.css";
+import { Milk } from 'lucide-react';
 
-const Home = () => {
-    return (
-        <div className="home-page">
-            <div className="home-content">
-                <div className="home-hero">
-                    <h1 className="home-title">
-                        Track Your <span>Milk Delivery</span> Easily
-                    </h1>
-                    <p className="home-subtitle">
-                        Subscribe to your favorite milk vendors, manage deliveries,
-                        and never miss your daily milk. Simple and convenient.
-                    </p>
-                </div>
-            </div>
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
+      <div className="text-center px-4">
+        <img 
+          src="https://images.pexels.com/photos/248412/pexels-photo-248412.jpeg?auto=compress&cs=tinysrgb&w=600"
+          alt="Fresh milk"
+          className="w-64 h-64 object-cover rounded-full mx-auto mb-8 shadow-lg"
+        />
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <Milk className="h-10 w-10 text-primary" />
+          <h1 className="text-4xl font-bold tracking-tight text-foreground">
+            Milk Tracker
+          </h1>
         </div>
-    );
-};
-
-export default Home;
+        <p className="text-lg text-muted-foreground max-w-md">
+          Welcome to Milk Tracker - your simple solution for managing milk subscriptions and deliveries.
+        </p>
+      </div>
+    </div>
+  );
+}

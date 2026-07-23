@@ -1,81 +1,75 @@
-import { useNavigate } from "react-router";
-import { showToast } from "../Toast";
-import "../../styles/auth.css";
+import { useNavigate } from 'react-router';
+import { toast } from '@/components/ui/toaster';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { API_BASE } from "~/config";
 
-const LoginForm = ({ mode, onSwitchToSignup  }) => {
-    const navigate = useNavigate();
+const LoginForm = ({ mode }) => {
+  const navigate = useNavigate();
 
-    const API_BASE = mode === "customer" ? "/api/customers" : "/api/vendors";
-    const userType = mode === "customer" ? "Customer" : "Vendor";
+  const dashboardRoute =
+    mode === 'customer' ? '/customers/dashboard' : '/vendors/dashboard';
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        const formData = new FormData(e.target);
-        const email = formData.get("email");
-        const password = formData.get("password");
+    const formData = new FormData(e.target);
+    const email = formData.get('email');
+    const password = formData.get('password');
 
-        try {
-            const response = await fetch(`${API_BASE}/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
-                credentials: "include",
-            });
+    try {
+      const response = await fetch(`${API_BASE}/api/${mode}s/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+        credentials: 'include',
+      });
 
-            const data = await response.json();
-            if (!response.ok) {
-                showToast.error("Login failed");
-                return;
-            }
+      const data = await response.json();
 
-            showToast.success("Login successful!");
+      if (!response.ok) {
+        toast.error('Login failed', data.detail || 'Invalid credentials');
+        return;
+      }
 
-            const dashboardRoute = mode === "customer" ? "/customers/dashboard" : "/vendors/dashboard"; 
+      toast.success('Login successful!');
+      navigate(dashboardRoute, { replace: true });
+    } catch (err) {
+      toast.error('Something went wrong');
+    }
+  };
 
-            navigate(dashboardRoute, { replace: true });
-        } catch (err) {
-            showToast.error("Something went wrong");
-        }
-    };
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="email">Email</Label>
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          placeholder="Enter your email"
+          required
+        />
+      </div>
 
-    return (
-        <div className="auth-page">
-            <div className="auth-container">
+      <div className="space-y-2">
+        <Label htmlFor="password">Password</Label>
+        <Input
+          id="password"
+          name="password"
+          type="password"
+          placeholder="Enter your password"
+          required
+        />
+      </div>
 
-                <div className="auth-header">
-                    <h1 className="auth-title"> {userType} Login</h1>
-                </div>
-
-                <form className="auth-form" onSubmit={handleSubmit}>
-
-                    <div className="form-group">
-                        <label>Email</label>
-                        <input type="email" name="email" 
-                           className="form-input"
-                           placeholder="Enter your email" 
-                           required />
-                    </div>
-
-                    <div className="form-group">
-                        <label>Password</label>
-                        <input type="password" name="password"
-                            className="form-input"
-                            placeholder="Enter your password"
-                            required/>
-                    </div>
-
-                    <button type="submit" className="form-submit">
-                        Login 
-                    </button>
-
-                    <p className="auth-switch-text">Don't have an account?{" "}
-                        <span className="auth-switch-link" onClick={onSwitchToSignup}>Signup here</span>
-                    </p>
-                </form>
-            </div>
-        </div>
-    );
+      <Button type="submit" className="w-full">
+        Login
+      </Button>
+    </form>
+  );
 };
 
 export default LoginForm;

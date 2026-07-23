@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "alembic>=1.18.4",
+    "apscheduler>=3.11.2",
     "argon2-cffi>=25.1.0",
     "cloudinary>=1.44.1",
     "fastapi[all]>=0.135.2",
@@ -15,6 +16,7 @@ dependencies = [
     "pydantic>=2.12.5",
     "pydantic-settings>=2.13.1",
     "pytest>=9.0.2",
+    "razorpay>=2.0.1",
     "ruff>=0.15.7",
     "sqlalchemy>=2.0.48",
     "starlette>=1.0.0",

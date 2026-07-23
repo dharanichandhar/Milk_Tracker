@@ -1,54 +1,71 @@
-# Laptop Setup
+# Milk Tracker
 
-## Installation Instructions
+A full-stack web application for managing milk delivery subscriptions between vendors (milk sellers) and customers (milk buyers).
 
-Installation instructions can be found here: https://github.com/silverstripesoftware/tinymagiq-fde
+## Features
 
-## Step 1: Install Windows Subsystem for Linux (WSL)
+### Vendor Portal
+- Register with a business name and profile image
+- Set and manage milk pricing with history tracking
+- View customer list with search and individual detail pages
+- Analytics dashboard with revenue trends, daily charts, and top customers
+- Track payment history and pending amounts
 
-Go here and follow the instructions - https://learn.microsoft.com/en-us/windows/wsl/install
+### Customer Portal
+- Browse and subscribe to milk vendors
+- Set daily milk quantities per vendor
+- Interactive calendar to override daily deliveries (skip days, adjust quantity)
+- Pay vendors via simulated UPI, Card, or Cash payment flow
+- View payment history and pending amounts
 
-Install the `Ubuntu` distribution for WSL
+### System Features
+- Automatic daily milk record generation for active subscriptions (via APScheduler)
+- Cookie-based session authentication (separate for vendors and customers)
+- Image upload for vendor profiles (via Cloudinary)
+- Responsive design with mobile-friendly sidebar navigation
 
-Test by opening Ubuntu from the Start Menu and typing `ls` to see the files in the home directory
+## Tech Stack
 
-If you have not worked in Linux before, here is a very brief tutorial - https://www.geeksforgeeks.org/linux-unix/basic-linux-commands/
+| Layer | Technology |
+|-------|-----------|
+| **Backend** | Python 3.13, FastAPI, SQLAlchemy, Alembic |
+| **Database** | PostgreSQL 18 |
+| **Frontend** | React 19, React Router v7, Tailwind CSS, shadcn/ui |
+| **Build Tool** | Vite 8 |
+| **Package Manager** | uv (Python), npm (JS) |
+| **Background Jobs** | APScheduler |
+| **Image Storage** | Cloudinary |
+| **Password Hashing** | Argon2 |
 
-## Step 2: Install Visual Studio Code
+## Architecture
 
-Install it from here - https://code.visualstudio.com/download (Get the windows version)
+```
+Frontend (React, port 5173)  ──/api/*──>  Backend (FastAPI, port 8000)  ──>  PostgreSQL (port 5432)
+```
 
-## Step 3: Install Docker Desktop for Windows
+- The Vite dev server proxies all `/api/*` requests to the FastAPI backend
+- Authentication uses httponly cookies (`customer_session` / `vendor_session`) with tokens stored in the database
+- APScheduler runs background jobs: daily record generation (00:05), payment reminders (09:00), session cleanup (03:00)
 
-Instructions - https://docs.docker.com/desktop/setup/install/windows-install/
+## Prerequisites
 
-Then after installing, enable docker for WSL2 - https://docs.docker.com/desktop/features/wsl/
+- **Python** 3.13+
+- **Node.js** 24+
+- **Docker** (for PostgreSQL)
+- **uv** (Python package manager) - [Install uv](https://docs.astral.sh/uv/getting-started/installation/)
 
-## Step 4: Install git
+## Getting Started
 
-Now go into your WSL terminal. We are going to install everything else inside WSL.
+### 1. Clone the repository
 
-Instructions - https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
+```bash
+git clone git@github.com:silverstripesoftware/tinymagiq-fde.git
+cd tinymagiq-fde
+```
 
-Then follow the steps here to configure SSH - https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent?platform=linux
+### 2. Start PostgreSQL
 
-After SSH key is created on your laptop, you need to configure Github with your public key - https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account
-
-Test everything by cloning this repository through this command: `git clone git@github.com:silverstripesoftware/tinymagiq-fde.git`
-
-## Step 5: Install uv
-
-`uv` is used to create python projects. Install instructions are here - https://docs.astral.sh/uv/getting-started/installation/
-
-Now run `uv sync` to download and install the basic dependencies for this project
-
-Then you can test it by running this command: `uv run main.py`
-
-## Step 6: Install postgresql
-
-Run this command to get the docker image: `docker pull postgres:18`
-
-Then run the below command from within the project directory to run the server
+Run PostgreSQL using Docker:
 
 ```bash
 docker run -d \
@@ -60,31 +77,101 @@ docker run -d \
   postgres
 ```
 
-Test it by running `uv run test_db.py`
+### 3. Install Python dependencies
 
-## Step 7: Install Node JS
+```bash
+uv sync
+```
 
-First install nvm: `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash`
-Then reload the configuration: `source ~/.bashrc`
-Finally install node 22: `nvm install 24`
+### 4. Run database migrations
 
-Test by running these two commands: `node -v` and `npm -v`
+From the `backend/` directory:
 
-## Step 8: Install Opencode
+```bash
+cd backend
+uv run alembic upgrade head
+```
 
-Run this command: `curl -fsSL https://opencode.ai/install | bash`
+### 5. Start the backend
 
-Test it by running `opencode` inside the project directory. Ask it to explain what `test_pg.py` file does
+From the `backend/` directory:
 
-Then run the `/connect` command, select `Baseten` as provider, and ask me for the API Key and then select `GLM 5` as the model
+```bash
+uv run fastapi dev app/main.py
+```
 
-## Step 9: Install VS Code Extensions
+The API runs at `http://localhost:8000`.
 
-Install the following extensions for VSCode:
+### 6. Install frontend dependencies
 
-- WSL: https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl
-- Python: https://marketplace.visualstudio.com/items?itemName=ms-python.python
+From the `frontend-router/` directory:
 
-After that, go to the WSL terminal, and inside the project directory, run the command `code .` to launch VS Code from inside WSL
+```bash
+cd frontend-router
+npm install
+```
 
-Then re-install Python extension from within WSL
+### 7. Start the frontend dev server
+
+```bash
+npm run dev
+```
+
+The frontend runs at `http://localhost:5173`.
+
+### 8. Open the application
+
+Visit `http://localhost:5173` in your browser. Create a vendor or customer account to get started.
+
+## Project Structure
+
+```
+tinymagiq-fde/
+├── backend/                    # FastAPI Python backend
+│   ├── app/
+│   │   ├── main.py             # FastAPI app entry point
+│   │   ├── config.py           # Pydantic settings
+│   │   ├── database.py         # SQLAlchemy engine + session
+│   │   ├── models.py           # ORM models (Vendor, Customer, Subscription, etc.)
+│   │   ├── schema/             # Pydantic request/response schemas
+│   │   ├── routes/             # API endpoints
+│   │   ├── scheduler/          # APScheduler background jobs
+│   │   └── cloudinary/         # Image upload service
+│   ├── alembic/                # Database migrations
+│   └── tests/                  # Integration tests
+│
+├── frontend-router/            # React Router v7 frontend
+│   ├── app/
+│   │   ├── root.jsx            # HTML shell
+│   │   ├── routes.js           # Route definitions
+│   │   ├── app.css             # Tailwind CSS + design tokens
+│   │   ├── layouts/            # Navbar, CustomerSidebar, VendorSidebar
+│   │   ├── components/         # Reusable UI components (shadcn/ui)
+│   │   └── routes/             # Page components
+│   │       ├── customers/      # Customer portal pages (6 pages)
+│   │       └── vendors/        # Vendor portal pages (6 pages)
+│   └── package.json
+│
+├── bruno/                      # API collection for manual testing
+└── pyproject.toml              # Python project config
+```
+
+## API Endpoints
+
+| Group | Base Path | Endpoints |
+|-------|-----------|-----------|
+| Customers | `/api/customers/` | signup, login, logout, profile, dashboard-stats, payable-amounts, confirm-payment, payment-history |
+| Vendors | `/api/vendors/` | create, login, logout, profile, dashboard, analytics, customers, pricing, payment-history |
+| Subscriptions | `/api/subscriptions/` | create, update, unsubscribe, my-vendors, subscription-data |
+| Milk Records | `/api/milk-records/` | get records, update record |
+
+## Database Tables
+
+- **vendors** - Vendor profiles (id, name, image_url)
+- **customers** - Customer profiles (id, name)
+- **vendor_login_credentials** - Vendor auth (email, password_hash, session_token)
+- **customer_login_credentials** - Customer auth (email, password_hash, session_token)
+- **subscription** - Many-to-many relationship with default_quantity and is_active
+- **milk_prices** - Vendor pricing history
+- **daily_milk_records** - Daily delivery records with quantity and amount
+- **payments** - Payment transactions (UPI, Card, Cash)

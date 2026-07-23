@@ -1,119 +1,118 @@
-import { useNavigate } from "react-router";
-import { showToast } from "../Toast";
-import "../../styles/auth.css";
+import { useNavigate } from 'react-router';
+import { toast } from '@/components/ui/toaster';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { API_BASE } from "~/config";
 
-const SignupForm = ({ mode, onSwitchToLogin }) => {
-    const navigate = useNavigate();
+const SignupForm = ({ mode }) => {
+  const navigate = useNavigate();
 
-    const API_BASE = mode === "customer" ? "/api/customers" : "/api/vendors";
-    const userType = mode === "customer" ? "Customer" : "Vendor";
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const formData = new FormData(e.target);
+    const name = formData.get('name');
+    const email = formData.get('email');
+    const password = formData.get('password');
+    const image = formData.get('image');
 
-        const formData = new FormData(e.target);
+    try {
+      if (mode === 'vendor' && !image.name) {
+        toast.error('Image is required for vendor signup');
+        return;
+      }
 
-        const name = formData.get("name");
-        const email = formData.get("email");
-        const password = formData.get("password");
-        const image = formData.get("image");
+      let response;
 
-        try {
-            if (mode === "vendor" && !image.name) {
-                showToast.error("Image is required for vendor signup");
-                return;
-            }
+      if (mode === 'customer') {
+        response = await fetch(`${API_BASE}/api/${mode}s/create`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ name, email, password }),
+        });
+      } else {
+        const formDataToSend = new FormData();
+        formDataToSend.append('name', name);
+        formDataToSend.append('email', email);
+        formDataToSend.append('password', password);
+        formDataToSend.append('image', image);
 
-            let response;
+        response = await fetch(`${API_BASE}/api/${mode}s/create`, {
+          method: 'POST',
+          credentials: 'include',
+          body: formDataToSend,
+        });
+      }
 
-            if (mode === "customer") {
-                response = await fetch(`${API_BASE}/create`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        name,email,password,
-                    }),
-                });
-            }
-            else {
-                const formDataToSend = new FormData();
-                formDataToSend.append("name", name);
-                formDataToSend.append("email", email);
-                formDataToSend.append("password", password);
-                formDataToSend.append("image", image);
+      const data = await response.json();
 
-                response = await fetch(`${API_BASE}/create`, {
-                    method: "POST",
-                    body: formDataToSend,
-                });
-            }
+      if (!response.ok) {
+        toast.error('Signup failed', data.detail || 'Please try again');
+        return;
+      }
 
-            const data = await response.json();
+      toast.success('Signup successful!');
+      navigate(`/${mode}s/dashboard`, { replace: true });
+    } catch (err) {
+      toast.error('Something went wrong');
+    }
+  };
 
-            if (!response.ok) {
-                showToast.error("Signup failed");
-                return;
-            }
-            showToast.success("Signup successful! Please login.");
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="name">Name</Label>
+        <Input
+          id="name"
+          name="name"
+          type="text"
+          placeholder="Enter your name"
+          required
+        />
+      </div>
 
-            navigate(`/${mode}s/login`, { replace: true });
+      <div className="space-y-2">
+        <Label htmlFor="signup-email">Email</Label>
+        <Input
+          id="signup-email"
+          name="email"
+          type="email"
+          placeholder="Enter your email"
+          required
+        />
+      </div>
 
-            onSwitchToLogin?.();
+      <div className="space-y-2">
+        <Label htmlFor="signup-password">Password</Label>
+        <Input
+          id="signup-password"
+          name="password"
+          type="password"
+          placeholder="Create a password"
+          required
+        />
+      </div>
 
-        } catch (err) {
-            showToast.error("Something went wrong");
-        }
-    };
-
-    return (
-        <div className="auth-page">
-            <div className="auth-container">
-
-                <div className="auth-header">
-                    <h1 className="auth-title">{userType} Signup</h1>
-                </div>
-
-                <form className="auth-form" onSubmit={handleSubmit}>
-
-                    <input type="text" name="name"
-                        className="form-input"
-                        placeholder="Enter your name"
-                        required
-                    />
-
-                    <input type="email" name="email"
-                        className="form-input"
-                        placeholder="Enter your email"
-                        required
-                    />
-
-                    <input type="password" name="password"
-                        className="form-input"
-                        placeholder="Enter password"
-                        required
-                    />
-
-                    {mode === "vendor" && (
-                        <input type="file" name="image"
-                            accept="image/*"
-                            className="form-input"
-                            required
-                        />
-                    )}
-
-                    <button type="submit" className="form-submit">
-                        Signup
-                    </button>
-
-                    <p className="auth-switch-text">Already have an account?{" "}
-                        <span className="auth-switch-link" onClick={onSwitchToLogin}>
-                            Login here
-                        </span>
-                    </p>
-                </form>
-            </div>
+      {mode === 'vendor' && (
+        <div className="space-y-2">
+          <Label htmlFor="image">Profile Image</Label>
+          <Input
+            id="image"
+            name="image"
+            type="file"
+            accept="image/*"
+            required
+          />
         </div>
-    );
+      )}
+
+      <Button type="submit" className="w-full">
+        Sign Up
+      </Button>
+    </form>
+  );
 };
 
 export default SignupForm;

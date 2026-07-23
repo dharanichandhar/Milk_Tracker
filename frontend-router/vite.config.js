@@ -1,9 +1,15 @@
-import { reactRouter } from "@react-router/dev/vite";
-import tailwindcss from "@tailwindcss/vite";
-import { defineConfig } from "vite";
+import { reactRouter } from '@react-router/dev/vite';
+import { defineConfig } from 'vite';
+import path from 'path';
 
 export default defineConfig({
-  plugins: [tailwindcss(), reactRouter()],
+  plugins: [reactRouter()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './app'),
+    },
+    tsconfigPaths: true,
+  },
   server: {
     proxy: {
       '/api': {
@@ -12,8 +18,5 @@ export default defineConfig({
         secure: false,
       },
     },
-  },
-  resolve: {
-    tsconfigPaths: true,
   },
 });

@@ -12,21 +12,6 @@ class CustomerLogin(BaseModel):
     password: str
 
 
-class VendorSingup(BaseModel):
-    name: str
-    email: str
-    password: str
-    image_url: str
-
-
 class VendorLogin(BaseModel):
     email: str
     password: str
-
-
-class SubscriptionCreate(BaseModel):
-    vendor_id: int
-
-
-class SubscribeRequest(BaseModel):
-    vendor_id: int

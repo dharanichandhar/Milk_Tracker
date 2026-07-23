@@ -20,3 +20,11 @@ __marimo__/
 .env
 .ruff_cache/
 .pytest_cache/
+.opencode/
+.labs/
+.init-scripts/
+.bruno/
+.opencode/
+labs/
+code_reading/
+portfolio/
