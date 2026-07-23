@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Loader2, CreditCard, Smartphone, Banknote, CheckCircle } from 'lucide-react';
 import { toast } from '@/components/ui/toaster';
-import { API_BASE } from "~/config";
+import { API_BASE_URL } from "~/config";
 
 const paymentMethods = [
   { id: 'UPI', label: 'UPI', icon: Smartphone, description: 'Pay using UPI apps' },
@@ -23,7 +23,7 @@ export default function PaymentModal({ vendor, amount, open, onOpenChange, onSuc
   const handlePayment = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/api/customers/confirm-payment`, {
+      const res = await fetch(`${API_BASE_URL}/api/customers/confirm-payment`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

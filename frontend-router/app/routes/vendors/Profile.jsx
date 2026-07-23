@@ -5,17 +5,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/components/ui/toaster';
-import { API_BASE } from '~/config';
+import { API_BASE_URL } from '~/config';
 
 export async function clientLoader() {
-  const res = await fetch(`${API_BASE}/api/vendors/me`, { credentials: 'include' });
+  const res = await fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' });
   const data = await res.json();
 
   if (!data.logged_in) {
     return { shouldRedirect: true, redirectTo: '/vendors/login' };
   }
 
-  const profileRes = await fetch(`${API_BASE}/api/vendors/profile`, {
+  const profileRes = await fetch(`${API_BASE_URL}/api/vendors/profile`, {
     credentials: 'include',
   });
   const profileData = await profileRes.json();
@@ -34,7 +34,7 @@ export async function clientAction({ request }) {
 
   if (intent === 'update-profile') {
     const name = formData.get('name');
-    const res = await fetch(`${API_BASE}/api/vendors/profile`, {
+    const res = await fetch(`${API_BASE_URL}/api/vendors/profile`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

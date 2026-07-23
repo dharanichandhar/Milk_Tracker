@@ -3,7 +3,7 @@ import { toast } from '@/components/ui/toaster';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { API_BASE } from "~/config";
+import { API_BASE_URL } from "~/config";
 
 const SignupForm = ({ mode }) => {
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ const SignupForm = ({ mode }) => {
       let response;
 
       if (mode === 'customer') {
-        response = await fetch(`${API_BASE}/api/${mode}s/create`, {
+        response = await fetch(`${API_BASE_URL}/api/${mode}s/create`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -39,7 +39,7 @@ const SignupForm = ({ mode }) => {
         formDataToSend.append('password', password);
         formDataToSend.append('image', image);
 
-        response = await fetch(`${API_BASE}/api/${mode}s/create`, {
+        response = await fetch(`${API_BASE_URL}/api/${mode}s/create`, {
           method: 'POST',
           credentials: 'include',
           body: formDataToSend,

@@ -5,10 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/components/ui/toaster';
-import { API_BASE } from '~/config';
+import { API_BASE_URL } from '~/config';
 
 export async function clientLoader() {
-  const res = await fetch(`${API_BASE}/api/customers/me`, { credentials: 'include' });
+  const res = await fetch(`${API_BASE_URL}/api/customers/me`, { credentials: 'include' });
   const data = await res.json();
 
   if (!data.logged_in) {
@@ -29,7 +29,7 @@ export async function clientAction({ request }) {
 
   if (intent === 'update-profile') {
     const name = formData.get('name');
-    const res = await fetch(`${API_BASE}/api/customers/profile`, {
+    const res = await fetch(`${API_BASE_URL}/api/customers/profile`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

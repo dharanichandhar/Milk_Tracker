@@ -2,7 +2,7 @@ import { useLoaderData, useFetcher, Navigate, useRevalidator } from 'react-route
 import { useEffect } from 'react';
 import VendorCard from '@/components/vendor-card';
 import { toast } from '@/components/ui/toaster';
-import { API_BASE } from '~/config';
+import { API_BASE_URL } from '~/config';
 
 export async function clientAction({ request }) {
   const formData = await request.formData();
@@ -10,7 +10,7 @@ export async function clientAction({ request }) {
   const vendorId = formData.get('vendorId');
 
   if (intent === 'subscribe') {
-    const res = await fetch(`${API_BASE}/api/subscriptions/create`, {
+    const res = await fetch(`${API_BASE_URL}/api/subscriptions/create`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -21,7 +21,7 @@ export async function clientAction({ request }) {
   }
 
   if (intent === 'unsubscribe') {
-    const res = await fetch(`${API_BASE}/api/subscriptions/unsubscribe/${vendorId}`, {
+    const res = await fetch(`${API_BASE_URL}/api/subscriptions/unsubscribe/${vendorId}`, {
       method: 'POST',
       credentials: 'include',
     });
@@ -34,9 +34,9 @@ export async function clientAction({ request }) {
 
 export async function clientLoader() {
   const [authRes, vendorsRes, subsRes] = await Promise.all([
-    fetch(`${API_BASE}/api/customers/me`, { credentials: 'include' }),
-    fetch(`${API_BASE}/api/vendors/all`, { credentials: 'include' }),
-    fetch(`${API_BASE}/api/subscriptions/my-vendors`, { credentials: 'include' }),
+    fetch(`${API_BASE_URL}/api/customers/me`, { credentials: 'include' }),
+    fetch(`${API_BASE_URL}/api/vendors/all`, { credentials: 'include' }),
+    fetch(`${API_BASE_URL}/api/subscriptions/my-vendors`, { credentials: 'include' }),
   ]);
 
   const authData = await authRes.json();

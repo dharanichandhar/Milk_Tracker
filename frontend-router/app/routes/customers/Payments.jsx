@@ -8,13 +8,13 @@ import { Separator } from '@/components/ui/separator';
 import PaymentModal from '@/components/payment-modal';
 import { toast } from '@/components/ui/toaster';
 import { CreditCard, History, ShoppingBag } from 'lucide-react';
-import { API_BASE } from '~/config';
+import { API_BASE_URL } from '~/config';
 
 export async function clientLoader() {
   const [authRes, payablesRes, historyRes] = await Promise.all([
-    fetch(`${API_BASE}/api/customers/me`, { credentials: 'include' }),
-    fetch(`${API_BASE}/api/customers/payable-amounts`, { credentials: 'include' }),
-    fetch(`${API_BASE}/api/customers/payment-history`, { credentials: 'include' }),
+    fetch(`${API_BASE_URL}/api/customers/me`, { credentials: 'include' }),
+    fetch(`${API_BASE_URL}/api/customers/payable-amounts`, { credentials: 'include' }),
+    fetch(`${API_BASE_URL}/api/customers/payment-history`, { credentials: 'include' }),
   ]);
 
   const authData = await authRes.json();

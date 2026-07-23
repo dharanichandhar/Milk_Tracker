@@ -1,9 +1,9 @@
 import { useLoaderData, Navigate } from 'react-router';
 import AuthForm from '@/components/AuthForm/AuthForm';
-import { API_BASE } from '~/config';
+import { API_BASE_URL } from '~/config';
 
 export async function clientLoader() {
-  const res = await fetch(`${API_BASE}/api/vendors/me`, { credentials: 'include' });
+  const res = await fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' });
   const data = await res.json();
 
   if (data.logged_in) {

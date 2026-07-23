@@ -7,17 +7,17 @@ import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from '@/components/ui/toaster';
 import { DollarSign } from 'lucide-react';
-import { API_BASE } from '~/config';
+import { API_BASE_URL } from '~/config';
 
 export async function clientLoader() {
-  const vendorRes = await fetch(`${API_BASE}/api/vendors/me`, { credentials: 'include' });
+  const vendorRes = await fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' });
   const vendorData = await vendorRes.json();
 
   if (!vendorData.logged_in) {
     return { shouldRedirect: true, redirectTo: '/vendors/login' };
   }
 
-  const pricingRes = await fetch(`${API_BASE}/api/vendors/pricing`, {
+  const pricingRes = await fetch(`${API_BASE_URL}/api/vendors/pricing`, {
     credentials: 'include',
   });
   const pricingData = await pricingRes.json();
@@ -36,7 +36,7 @@ export async function clientAction({ request }) {
   const formData = await request.formData();
   const price = formData.get('price');
 
-  const res = await fetch(`${API_BASE}/api/vendors/pricing`, {
+  const res = await fetch(`${API_BASE_URL}/api/vendors/pricing`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',

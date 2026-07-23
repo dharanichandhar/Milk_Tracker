@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
-import { API_BASE } from "~/config";
+import { API_BASE_URL } from "~/config";
 
 const sidebarLinks = [
   { to: '/vendors/dashboard', icon: Home, label: 'Dashboard' },
@@ -72,7 +72,7 @@ export default function VendorSidebar() {
 
   const handleLogout = async () => {
     try {
-      await fetch(`${API_BASE}/api/vendors/logout`, {
+      await fetch(`${API_BASE_URL}/api/vendors/logout`, {
         method: 'POST',
         credentials: 'include',
       });

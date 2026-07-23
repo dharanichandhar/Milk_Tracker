@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { API_BASE } from "~/config";
+import { API_BASE_URL } from "~/config";
 
 const LoginForm = ({ mode }) => {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const LoginForm = ({ mode }) => {
     const password = formData.get('password');
 
     try {
-      const response = await fetch(`${API_BASE}/api/${mode}s/login`, {
+      const response = await fetch(`${API_BASE_URL}/api/${mode}s/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),

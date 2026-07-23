@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
-import { API_BASE } from "~/config";
+import { API_BASE_URL } from "~/config";
 
 const sidebarLinks = [
   { to: '/customers/dashboard', icon: Home, label: 'Dashboard' },
@@ -74,7 +74,7 @@ export default function CustomerSidebar() {
 
   const handleLogout = async () => {
     try {
-      await fetch(`${API_BASE}/api/customers/logout`, {
+      await fetch(`${API_BASE_URL}/api/customers/logout`, {
         method: 'POST',
         credentials: 'include',
       });

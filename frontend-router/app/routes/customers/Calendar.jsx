@@ -9,12 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { toast } from '@/components/ui/toaster';
 import { format, parseISO } from 'date-fns';
-import { API_BASE } from '~/config';
+import { API_BASE_URL } from '~/config';
 
 export async function clientLoader() {
   const [authRes, subsRes] = await Promise.all([
-    fetch(`${API_BASE}/api/customers/me`, { credentials: 'include' }),
-    fetch(`${API_BASE}/api/subscriptions/my-vendors`, { credentials: 'include' }),
+    fetch(`${API_BASE_URL}/api/customers/me`, { credentials: 'include' }),
+    fetch(`${API_BASE_URL}/api/subscriptions/my-vendors`, { credentials: 'include' }),
   ]);
 
   const authData = await authRes.json();
@@ -50,7 +50,7 @@ export default function CalendarPage() {
 
   const fetchVendorPrice = async (vendorId) => {
     try {
-      const res = await fetch(`${API_BASE}/api/vendors/${vendorId}/price`);
+      const res = await fetch(`${API_BASE_URL}/api/vendors/${vendorId}/price`);
       if (res.ok) {
         const data = await res.json();
         setCurrentPrice(data.current_price || 60);
@@ -62,7 +62,7 @@ export default function CalendarPage() {
 
   const fetchTotalAmount = async (vendorId) => {
     try {
-      const res = await fetch(`${API_BASE}/api/customers/payable-amounts`, {
+      const res = await fetch(`${API_BASE_URL}/api/customers/payable-amounts`, {
         credentials: 'include',
       });
       if (res.ok) {
@@ -80,7 +80,7 @@ export default function CalendarPage() {
     setSelectedVendor(vendor);
 
     const [recordsRes] = await Promise.all([
-      fetch(`${API_BASE}/api/milk-records/?vendor_id=${vendorId}`, { credentials: 'include' }),
+      fetch(`${API_BASE_URL}/api/milk-records/?vendor_id=${vendorId}`, { credentials: 'include' }),
       fetchVendorPrice(vendorId),
     ]);
 
@@ -104,7 +104,7 @@ export default function CalendarPage() {
 
     setSaving(true);
     try {
-      const res = await fetch(`${API_BASE}/api/milk-records/update`, {
+      const res = await fetch(`${API_BASE_URL}/api/milk-records/update`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -118,7 +118,7 @@ export default function CalendarPage() {
       if (res.ok) {
         toast.success('Quantity updated!');
         setDialogOpen(false);
-        const recordsRes = await fetch(`${API_BASE}/api/milk-records/?vendor_id=${selectedVendor.id}`, {
+        const recordsRes = await fetch(`${API_BASE_URL}/api/milk-records/?vendor_id=${selectedVendor.id}`, {
           credentials: 'include',
         });
         const recordsData = await recordsRes.json();

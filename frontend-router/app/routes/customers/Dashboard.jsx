@@ -2,17 +2,17 @@ import { useLoaderData, Navigate } from 'react-router';
 import StatsCard from '@/components/stats-card';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Users, DollarSign } from 'lucide-react';
-import { API_BASE } from '~/config';
+import { API_BASE_URL } from '~/config';
 
 export async function clientLoader() {
-  const customerRes = await fetch(`${API_BASE}/api/customers/me`, { credentials: 'include' });
+  const customerRes = await fetch(`${API_BASE_URL}/api/customers/me`, { credentials: 'include' });
   const customerData = await customerRes.json();
 
   if (!customerData.logged_in) {
     return { shouldRedirect: true, redirectTo: '/customers/login' };
   }
 
-  const statsRes = await fetch(`${API_BASE}/api/customers/dashboard-stats`, {
+  const statsRes = await fetch(`${API_BASE_URL}/api/customers/dashboard-stats`, {
     credentials: 'include',
   });
   const statsData = await statsRes.json();

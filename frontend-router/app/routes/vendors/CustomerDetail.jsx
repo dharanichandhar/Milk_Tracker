@@ -4,10 +4,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ArrowLeft } from 'lucide-react';
-import { API_BASE } from '~/config';
+import { API_BASE_URL } from '~/config';
 
 export async function clientLoader({ params }) {
-  const vendorRes = await fetch(`${API_BASE}/api/vendors/me`, { credentials: 'include' });
+  const vendorRes = await fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' });
   const vendorData = await vendorRes.json();
 
   if (!vendorData.logged_in) {
@@ -15,7 +15,7 @@ export async function clientLoader({ params }) {
   }
 
   const customerRes = await fetch(
-    `${API_BASE}/api/vendors/customers/${params.id}`,
+    `${API_BASE_URL}/api/vendors/customers/${params.id}`,
     { credentials: 'include' }
   );
   const customerData = await customerRes.json();

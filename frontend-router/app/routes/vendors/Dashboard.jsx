@@ -3,10 +3,10 @@ import StatsCard from '@/components/stats-card';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Users, TrendingUp, CreditCard, AlertCircle, Package } from 'lucide-react';
-import { API_BASE } from '~/config';
+import { API_BASE_URL } from '~/config';
 
 export async function clientLoader() {
-  const vendorRes = await fetch(`${API_BASE}/api/vendors/me`, { credentials: 'include' });
+  const vendorRes = await fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' });
   const vendorData = await vendorRes.json();
 
   if (!vendorData.logged_in) {
@@ -14,8 +14,8 @@ export async function clientLoader() {
   }
 
   const [analyticsRes, paymentAnalyticsRes] = await Promise.all([
-    fetch(`${API_BASE}/api/vendors/analytics`, { credentials: 'include' }),
-    fetch(`${API_BASE}/api/vendors/payment-analytics`, { credentials: 'include' }),
+    fetch(`${API_BASE_URL}/api/vendors/analytics`, { credentials: 'include' }),
+    fetch(`${API_BASE_URL}/api/vendors/payment-analytics`, { credentials: 'include' }),
   ]);
 
   const analyticsData = await analyticsRes.json();

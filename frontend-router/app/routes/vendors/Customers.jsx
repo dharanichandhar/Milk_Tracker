@@ -3,17 +3,17 @@ import CustomerCard from '@/components/customer-card';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
-import { API_BASE } from '~/config';
+import { API_BASE_URL } from '~/config';
 
 export async function clientLoader() {
-  const vendorRes = await fetch(`${API_BASE}/api/vendors/me`, { credentials: 'include' });
+  const vendorRes = await fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' });
   const vendorData = await vendorRes.json();
 
   if (!vendorData.logged_in) {
     return { shouldRedirect: true, redirectTo: '/vendors/login' };
   }
 
-  const customersRes = await fetch(`${API_BASE}/api/vendors/customers`, {
+  const customersRes = await fetch(`${API_BASE_URL}/api/vendors/customers`, {
     credentials: 'include',
   });
   const customersData = await customersRes.json();

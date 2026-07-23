@@ -3,17 +3,17 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Receipt } from 'lucide-react';
-import { API_BASE } from '~/config';
+import { API_BASE_URL } from '~/config';
 
 export async function clientLoader() {
-  const vendorRes = await fetch(`${API_BASE}/api/vendors/me`, { credentials: 'include' });
+  const vendorRes = await fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' });
   const vendorData = await vendorRes.json();
 
   if (!vendorData.logged_in) {
     return { shouldRedirect: true, redirectTo: '/vendors/login' };
   }
 
-  const historyRes = await fetch(`${API_BASE}/api/vendors/payment-history`, {
+  const historyRes = await fetch(`${API_BASE_URL}/api/vendors/payment-history`, {
     credentials: 'include',
   });
   const historyData = await historyRes.json();

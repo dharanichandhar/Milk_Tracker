@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/components/ui/toaster';
-import { API_BASE } from '~/config';
+import { API_BASE_URL } from '~/config';
 
 export async function clientAction({ request }) {
   const formData = await request.formData();
@@ -15,7 +15,7 @@ export async function clientAction({ request }) {
 
   if (intent === 'update-quantity') {
     const quantity = formData.get('quantity');
-    const res = await fetch(`${API_BASE}/api/subscriptions/${vendorId}`, {
+    const res = await fetch(`${API_BASE_URL}/api/subscriptions/${vendorId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -25,7 +25,7 @@ export async function clientAction({ request }) {
   }
 
   if (intent === 'unsubscribe') {
-    const res = await fetch(`${API_BASE}/api/subscriptions/unsubscribe/${vendorId}`, {
+    const res = await fetch(`${API_BASE_URL}/api/subscriptions/unsubscribe/${vendorId}`, {
       method: 'POST',
       credentials: 'include',
     });
@@ -37,8 +37,8 @@ export async function clientAction({ request }) {
 
 export async function clientLoader() {
   const [authRes, subsRes] = await Promise.all([
-    fetch(`${API_BASE}/api/customers/me`, { credentials: 'include' }),
-    fetch(`${API_BASE}/api/subscriptions/my-vendors`, { credentials: 'include' }),
+    fetch(`${API_BASE_URL}/api/customers/me`, { credentials: 'include' }),
+    fetch(`${API_BASE_URL}/api/subscriptions/my-vendors`, { credentials: 'include' }),
   ]);
 
   const authData = await authRes.json();

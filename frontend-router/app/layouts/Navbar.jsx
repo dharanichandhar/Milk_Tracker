@@ -11,13 +11,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Milk, User, LogOut } from 'lucide-react';
-import { API_BASE } from "~/config";
+import { API_BASE_URL } from "~/config";
 
 export async function clientLoader() {
   try {
     const [customerRes, vendorRes] = await Promise.all([
-      fetch(`${API_BASE}/api/customers/me`, { credentials: 'include' }),
-      fetch(`${API_BASE}/api/vendors/me`, { credentials: 'include' }),
+      fetch(`${API_BASE_URL}/api/customers/me`, { credentials: 'include' }),
+      fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' }),
     ]);
 
     const customer = await customerRes.json();
@@ -63,12 +63,12 @@ export default function NavbarLayout() {
   const handleLogout = async () => {
     try {
       if (loaderData.userType === 'customer') {
-        await fetch(`${API_BASE}/api/customers/logout`, {
+        await fetch(`${API_BASE_URL}/api/customers/logout`, {
           method: 'POST',
           credentials: 'include',
         });
       } else if (loaderData.userType === 'vendor') {
-        await fetch(`${API_BASE}/api/vendors/logout`, {
+        await fetch(`${API_BASE_URL}/api/vendors/logout`, {
           method: 'POST',
           credentials: 'include',
         });
