@@ -7,26 +7,32 @@ import { ArrowLeft } from 'lucide-react';
 import { API_BASE_URL } from '~/config';
 
 export async function clientLoader({ params }) {
-  const vendorRes = await fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' });
-  const vendorData = await vendorRes.json();
+  try {
+    const vendorRes = await fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' });
+    const vendorData = await vendorRes.json();
 
-  if (!vendorData.logged_in) {
-    return { shouldRedirect: true, redirectTo: '/vendors/login' };
+    if (!vendorData.logged_in) {
+      return { shouldRedirect: true, redirectTo: '/vendors/login' };
+    }
+
+    const customerRes = await fetch(
+      `${API_BASE_URL}/api/vendors/customers/${params.id}`,
+      { credentials: 'include' }
+    );
+    const customerData = await customerRes.json();
+
+    return {
+      shouldRedirect: false,
+      customer: customerData.customer,
+      records: customerData.records || [],
+      payments: customerData.payments || [],
+      vendor_name: vendorData.name,
+    };
+  } catch (err) {
+    console.error('Customer detail loader failed', err);
   }
 
-  const customerRes = await fetch(
-    `${API_BASE_URL}/api/vendors/customers/${params.id}`,
-    { credentials: 'include' }
-  );
-  const customerData = await customerRes.json();
-
-  return {
-    shouldRedirect: false,
-    customer: customerData.customer,
-    records: customerData.records || [],
-    payments: customerData.payments || [],
-    vendor_name: vendorData.name,
-  };
+  return { shouldRedirect: true, redirectTo: '/vendors/login' };
 }
 
 clientLoader.hydrate = true;

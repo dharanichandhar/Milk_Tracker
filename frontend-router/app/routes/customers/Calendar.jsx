@@ -12,24 +12,32 @@ import { format, parseISO } from 'date-fns';
 import { API_BASE_URL } from '~/config';
 
 export async function clientLoader() {
-  const [authRes, subsRes] = await Promise.all([
-    fetch(`${API_BASE_URL}/api/customers/me`, { credentials: 'include' }),
-    fetch(`${API_BASE_URL}/api/subscriptions/my-vendors`, { credentials: 'include' }),
-  ]);
+  try {
+    const [authRes, subsRes] = await Promise.all([
+      fetch(`${API_BASE_URL}/api/customers/me`, { credentials: 'include' }),
+      fetch(`${API_BASE_URL}/api/subscriptions/my-vendors`, { credentials: 'include' }),
+    ]);
 
-  const authData = await authRes.json();
-  if (!authData.logged_in) {
-    return { shouldRedirect: true, redirectTo: '/customers/login' };
+    const authData = await authRes.json();
+    if (!authData.logged_in) {
+      return { shouldRedirect: true, redirectTo: '/customers/login' };
+    }
+
+    const subsData = await subsRes.json();
+
+    return {
+      shouldRedirect: false,
+      subscriptions: subsData.vendors || [],
+      customer_name: authData.name,
+    };
+  } catch (err) {
+    console.error('Calendar loader failed', err);
   }
 
-  const subsData = await subsRes.json();
-
-  return {
-    shouldRedirect: false,
-    subscriptions: subsData.vendors || [],
-    customer_name: authData.name,
-  };
+  return { shouldRedirect: true, redirectTo: '/customers/login' };
 }
+
+clientLoader.hydrate = true;
 
 export default function CalendarPage() {
   const loaderData = useLoaderData();

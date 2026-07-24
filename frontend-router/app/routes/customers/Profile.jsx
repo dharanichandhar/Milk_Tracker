@@ -8,17 +8,23 @@ import { toast } from '@/components/ui/toaster';
 import { API_BASE_URL } from '~/config';
 
 export async function clientLoader() {
-  const res = await fetch(`${API_BASE_URL}/api/customers/me`, { credentials: 'include' });
-  const data = await res.json();
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/customers/me`, { credentials: 'include' });
+    const data = await res.json();
 
-  if (!data.logged_in) {
-    return { shouldRedirect: true, redirectTo: '/customers/login' };
+    if (!data.logged_in) {
+      return { shouldRedirect: true, redirectTo: '/customers/login' };
+    }
+
+    return {
+      shouldRedirect: false,
+      customer: data,
+    };
+  } catch (err) {
+    console.error('Profile loader failed', err);
   }
 
-  return {
-    shouldRedirect: false,
-    customer: data,
-  };
+  return { shouldRedirect: true, redirectTo: '/customers/login' };
 }
 
 clientLoader.hydrate = true;

@@ -8,22 +8,28 @@ import { toast } from '@/components/ui/toaster';
 import { API_BASE_URL } from '~/config';
 
 export async function clientLoader() {
-  const res = await fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' });
-  const data = await res.json();
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' });
+    const data = await res.json();
 
-  if (!data.logged_in) {
-    return { shouldRedirect: true, redirectTo: '/vendors/login' };
+    if (!data.logged_in) {
+      return { shouldRedirect: true, redirectTo: '/vendors/login' };
+    }
+
+    const profileRes = await fetch(`${API_BASE_URL}/api/vendors/profile`, {
+      credentials: 'include',
+    });
+    const profileData = await profileRes.json();
+
+    return {
+      shouldRedirect: false,
+      vendor: profileData.vendor || data,
+    };
+  } catch (err) {
+    console.error('Vendor profile loader failed', err);
   }
 
-  const profileRes = await fetch(`${API_BASE_URL}/api/vendors/profile`, {
-    credentials: 'include',
-  });
-  const profileData = await profileRes.json();
-
-  return {
-    shouldRedirect: false,
-    vendor: profileData.vendor || data,
-  };
+  return { shouldRedirect: true, redirectTo: '/vendors/login' };
 }
 
 clientLoader.hydrate = true;

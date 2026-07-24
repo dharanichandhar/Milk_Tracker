@@ -6,28 +6,34 @@ import { Users, TrendingUp, CreditCard, AlertCircle, Package } from 'lucide-reac
 import { API_BASE_URL } from '~/config';
 
 export async function clientLoader() {
-  const vendorRes = await fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' });
-  const vendorData = await vendorRes.json();
+  try {
+    const vendorRes = await fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' });
+    const vendorData = await vendorRes.json();
 
-  if (!vendorData.logged_in) {
-    return { shouldRedirect: true, redirectTo: '/vendors/login' };
+    if (!vendorData.logged_in) {
+      return { shouldRedirect: true, redirectTo: '/vendors/login' };
+    }
+
+    const [analyticsRes, paymentAnalyticsRes] = await Promise.all([
+      fetch(`${API_BASE_URL}/api/vendors/analytics`, { credentials: 'include' }),
+      fetch(`${API_BASE_URL}/api/vendors/payment-analytics`, { credentials: 'include' }),
+    ]);
+
+    const analyticsData = await analyticsRes.json();
+    const paymentAnalyticsData = await paymentAnalyticsRes.json();
+
+    return {
+      shouldRedirect: false,
+      vendor_id: vendorData.vendor_id,
+      vendor_name: vendorData.name,
+      analytics: analyticsData,
+      paymentAnalytics: paymentAnalyticsData,
+    };
+  } catch (err) {
+    console.error('Vendor dashboard loader failed', err);
   }
 
-  const [analyticsRes, paymentAnalyticsRes] = await Promise.all([
-    fetch(`${API_BASE_URL}/api/vendors/analytics`, { credentials: 'include' }),
-    fetch(`${API_BASE_URL}/api/vendors/payment-analytics`, { credentials: 'include' }),
-  ]);
-
-  const analyticsData = await analyticsRes.json();
-  const paymentAnalyticsData = await paymentAnalyticsRes.json();
-
-  return {
-    shouldRedirect: false,
-    vendor_id: vendorData.vendor_id,
-    vendor_name: vendorData.name,
-    analytics: analyticsData,
-    paymentAnalytics: paymentAnalyticsData,
-  };
+  return { shouldRedirect: true, redirectTo: '/vendors/login' };
 }
 
 clientLoader.hydrate = true;

@@ -6,23 +6,29 @@ import { Receipt } from 'lucide-react';
 import { API_BASE_URL } from '~/config';
 
 export async function clientLoader() {
-  const vendorRes = await fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' });
-  const vendorData = await vendorRes.json();
+  try {
+    const vendorRes = await fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' });
+    const vendorData = await vendorRes.json();
 
-  if (!vendorData.logged_in) {
-    return { shouldRedirect: true, redirectTo: '/vendors/login' };
+    if (!vendorData.logged_in) {
+      return { shouldRedirect: true, redirectTo: '/vendors/login' };
+    }
+
+    const historyRes = await fetch(`${API_BASE_URL}/api/vendors/payment-history`, {
+      credentials: 'include',
+    });
+    const historyData = await historyRes.json();
+
+    return {
+      shouldRedirect: false,
+      vendor_name: vendorData.name,
+      payments: historyData.payments || [],
+    };
+  } catch (err) {
+    console.error('Payment history loader failed', err);
   }
 
-  const historyRes = await fetch(`${API_BASE_URL}/api/vendors/payment-history`, {
-    credentials: 'include',
-  });
-  const historyData = await historyRes.json();
-
-  return {
-    shouldRedirect: false,
-    vendor_name: vendorData.name,
-    payments: historyData.payments || [],
-  };
+  return { shouldRedirect: true, redirectTo: '/vendors/login' };
 }
 
 clientLoader.hydrate = true;

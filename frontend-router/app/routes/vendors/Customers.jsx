@@ -6,23 +6,29 @@ import { useState } from 'react';
 import { API_BASE_URL } from '~/config';
 
 export async function clientLoader() {
-  const vendorRes = await fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' });
-  const vendorData = await vendorRes.json();
+  try {
+    const vendorRes = await fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' });
+    const vendorData = await vendorRes.json();
 
-  if (!vendorData.logged_in) {
-    return { shouldRedirect: true, redirectTo: '/vendors/login' };
+    if (!vendorData.logged_in) {
+      return { shouldRedirect: true, redirectTo: '/vendors/login' };
+    }
+
+    const customersRes = await fetch(`${API_BASE_URL}/api/vendors/customers`, {
+      credentials: 'include',
+    });
+    const customersData = await customersRes.json();
+
+    return {
+      shouldRedirect: false,
+      customers: customersData.customers || [],
+      vendor_name: vendorData.name,
+    };
+  } catch (err) {
+    console.error('Customers loader failed', err);
   }
 
-  const customersRes = await fetch(`${API_BASE_URL}/api/vendors/customers`, {
-    credentials: 'include',
-  });
-  const customersData = await customersRes.json();
-
-  return {
-    shouldRedirect: false,
-    customers: customersData.customers || [],
-    vendor_name: vendorData.name,
-  };
+  return { shouldRedirect: true, redirectTo: '/vendors/login' };
 }
 
 clientLoader.hydrate = true;

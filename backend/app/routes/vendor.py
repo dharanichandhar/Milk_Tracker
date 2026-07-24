@@ -67,7 +67,7 @@ def create_vendor(
     except IntegrityError as e:
         db.rollback()
         print("DB ERROR:", e)
-        return {"success": False, "message": "Email already exists or DB issue"}
+        raise HTTPException(status_code=409, detail="Email already exists or DB issue")
 
     token = create_session(db, VendorLoginCredential, "vendor_id", vendor.id)
 
@@ -177,7 +177,15 @@ def logout_vendor(request: Request, db: Session = Depends(get_db)):
         token = request.cookies.get("vendor_session")
 
         if not token:
-            return {"success": True, "message": "Already logged out"}
+            response = JSONResponse({"success": True, "message": "Already logged out"})
+            response.delete_cookie(
+                key="vendor_session",
+                httponly=True,
+                samesite="none",
+                secure=True,
+                path="/",
+            )
+            return response
 
         session_data = validate_session(db, VendorLoginCredential, token)
 
@@ -188,7 +196,13 @@ def logout_vendor(request: Request, db: Session = Depends(get_db)):
 
         response = JSONResponse({"success": True, "message": "Logout successful"})
 
-        response.delete_cookie("vendor_session")
+        response.delete_cookie(
+            key="vendor_session",
+            httponly=True,
+            samesite="none",
+            secure=True,
+            path="/",
+        )
 
         return response
 

@@ -59,7 +59,7 @@ def create_customer(data: CustomerSingup, db: Session = Depends(get_db)):
         db.refresh(customer_login_credential)
     except IntegrityError:
         db.rollback()
-        return {"success": False, "message": "Email already exists"}
+        raise HTTPException(status_code=409, detail="Email already exists")
 
     token = create_session(db, CustomerLoginCrendential, "customer_id", customer.id)
 
@@ -126,7 +126,13 @@ def logout_customer(
         )
 
     response = JSONResponse(content={"success": True, "message": "Logout successfully"})
-    response.delete_cookie(key="customer_session")
+    response.delete_cookie(
+        key="customer_session",
+        httponly=True,
+        samesite="none",
+        secure=True,
+        path="/",
+    )
     return response
 
 

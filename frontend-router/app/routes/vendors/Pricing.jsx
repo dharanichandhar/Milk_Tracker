@@ -10,24 +10,30 @@ import { DollarSign } from 'lucide-react';
 import { API_BASE_URL } from '~/config';
 
 export async function clientLoader() {
-  const vendorRes = await fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' });
-  const vendorData = await vendorRes.json();
+  try {
+    const vendorRes = await fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' });
+    const vendorData = await vendorRes.json();
 
-  if (!vendorData.logged_in) {
-    return { shouldRedirect: true, redirectTo: '/vendors/login' };
+    if (!vendorData.logged_in) {
+      return { shouldRedirect: true, redirectTo: '/vendors/login' };
+    }
+
+    const pricingRes = await fetch(`${API_BASE_URL}/api/vendors/pricing`, {
+      credentials: 'include',
+    });
+    const pricingData = await pricingRes.json();
+
+    return {
+      shouldRedirect: false,
+      currentPrice: pricingData.current_price || 60,
+      priceHistory: pricingData.history || [],
+      vendor_name: vendorData.name,
+    };
+  } catch (err) {
+    console.error('Pricing loader failed', err);
   }
 
-  const pricingRes = await fetch(`${API_BASE_URL}/api/vendors/pricing`, {
-    credentials: 'include',
-  });
-  const pricingData = await pricingRes.json();
-
-  return {
-    shouldRedirect: false,
-    currentPrice: pricingData.current_price || 60,
-    priceHistory: pricingData.history || [],
-    vendor_name: vendorData.name,
-  };
+  return { shouldRedirect: true, redirectTo: '/vendors/login' };
 }
 
 clientLoader.hydrate = true;

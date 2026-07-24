@@ -11,27 +11,33 @@ import { CreditCard, History, ShoppingBag } from 'lucide-react';
 import { API_BASE_URL } from '~/config';
 
 export async function clientLoader() {
-  const [authRes, payablesRes, historyRes] = await Promise.all([
-    fetch(`${API_BASE_URL}/api/customers/me`, { credentials: 'include' }),
-    fetch(`${API_BASE_URL}/api/customers/payable-amounts`, { credentials: 'include' }),
-    fetch(`${API_BASE_URL}/api/customers/payment-history`, { credentials: 'include' }),
-  ]);
+  try {
+    const [authRes, payablesRes, historyRes] = await Promise.all([
+      fetch(`${API_BASE_URL}/api/customers/me`, { credentials: 'include' }),
+      fetch(`${API_BASE_URL}/api/customers/payable-amounts`, { credentials: 'include' }),
+      fetch(`${API_BASE_URL}/api/customers/payment-history`, { credentials: 'include' }),
+    ]);
 
-  const authData = await authRes.json();
-  if (!authData.logged_in) {
-    return { shouldRedirect: true, redirectTo: '/customers/login' };
+    const authData = await authRes.json();
+    if (!authData.logged_in) {
+      return { shouldRedirect: true, redirectTo: '/customers/login' };
+    }
+
+    const payablesData = await payablesRes.json();
+    const historyData = await historyRes.json();
+
+    return {
+      shouldRedirect: false,
+      payables: payablesData.payables || [],
+      grandTotal: payablesData.grand_total || 0,
+      paymentHistory: historyData.payments || [],
+      customer_name: authData.name,
+    };
+  } catch (err) {
+    console.error('Payments loader failed', err);
   }
 
-  const payablesData = await payablesRes.json();
-  const historyData = await historyRes.json();
-
-  return {
-    shouldRedirect: false,
-    payables: payablesData.payables || [],
-    grandTotal: payablesData.grand_total || 0,
-    paymentHistory: historyData.payments || [],
-    customer_name: authData.name,
-  };
+  return { shouldRedirect: true, redirectTo: '/customers/login' };
 }
 
 clientLoader.hydrate = true;

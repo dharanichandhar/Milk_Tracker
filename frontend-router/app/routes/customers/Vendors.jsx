@@ -33,30 +33,36 @@ export async function clientAction({ request }) {
 }
 
 export async function clientLoader() {
-  const [authRes, vendorsRes, subsRes] = await Promise.all([
-    fetch(`${API_BASE_URL}/api/customers/me`, { credentials: 'include' }),
-    fetch(`${API_BASE_URL}/api/vendors/all`, { credentials: 'include' }),
-    fetch(`${API_BASE_URL}/api/subscriptions/my-vendors`, { credentials: 'include' }),
-  ]);
+  try {
+    const [authRes, vendorsRes, subsRes] = await Promise.all([
+      fetch(`${API_BASE_URL}/api/customers/me`, { credentials: 'include' }),
+      fetch(`${API_BASE_URL}/api/vendors/all`, { credentials: 'include' }),
+      fetch(`${API_BASE_URL}/api/subscriptions/my-vendors`, { credentials: 'include' }),
+    ]);
 
-  const authData = await authRes.json();
-  if (!authData.logged_in) {
-    return { shouldRedirect: true, redirectTo: '/customers/login' };
+    const authData = await authRes.json();
+    if (!authData.logged_in) {
+      return { shouldRedirect: true, redirectTo: '/customers/login' };
+    }
+
+    const vendorsData = await vendorsRes.json();
+    const subsData = await subsRes.json();
+
+    const subscribedVendorIds = new Set(
+      subsData.vendors?.map((v) => v.id) || []
+    );
+
+    return {
+      shouldRedirect: false,
+      vendors: vendorsData,
+      subscribedVendorIds,
+      customer_name: authData.name,
+    };
+  } catch (err) {
+    console.error('Vendors loader failed', err);
   }
 
-  const vendorsData = await vendorsRes.json();
-  const subsData = await subsRes.json();
-
-  const subscribedVendorIds = new Set(
-    subsData.vendors?.map((v) => v.id) || []
-  );
-
-  return {
-    shouldRedirect: false,
-    vendors: vendorsData,
-    subscribedVendorIds,
-    customer_name: authData.name,
-  };
+  return { shouldRedirect: true, redirectTo: '/customers/login' };
 }
 
 clientLoader.hydrate = true;
