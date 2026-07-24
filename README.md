@@ -1,5 +1,10 @@
 # Milk Tracker
 
+Live Demo :  https://milk-tracker-ashen.vercel.app/ 
+
+frontend Deploy : Vercel 
+backend Deploy  : Render
+
 A full-stack web application for managing milk delivery subscriptions between vendors (milk sellers) and customers (milk buyers).
 
 ## Features
