@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { toast } from '@/components/ui/toaster';
 import { format, parseISO } from 'date-fns';
 import { API_BASE_URL } from '~/config';
+import RouteLoading from '@/components/route-loading';
 
 export async function clientLoader() {
   try {
@@ -38,6 +39,10 @@ export async function clientLoader() {
 }
 
 clientLoader.hydrate = true;
+
+export function HydrateFallback() {
+  return <RouteLoading />;
+}
 
 export default function CalendarPage() {
   const loaderData = useLoaderData();

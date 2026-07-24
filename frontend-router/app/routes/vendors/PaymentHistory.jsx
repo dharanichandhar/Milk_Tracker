@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Receipt } from 'lucide-react';
 import { API_BASE_URL } from '~/config';
+import RouteLoading from '@/components/route-loading';
 
 export async function clientLoader() {
   try {
@@ -32,6 +33,10 @@ export async function clientLoader() {
 }
 
 clientLoader.hydrate = true;
+
+export function HydrateFallback() {
+  return <RouteLoading />;
+}
 
 export default function VendorPaymentHistory() {
   const loaderData = useLoaderData();

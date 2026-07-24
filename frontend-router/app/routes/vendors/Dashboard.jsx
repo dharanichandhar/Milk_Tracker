@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Users, TrendingUp, CreditCard, AlertCircle, Package } from 'lucide-react';
 import { API_BASE_URL } from '~/config';
+import RouteLoading from '@/components/route-loading';
 
 export async function clientLoader() {
   try {
@@ -37,6 +38,10 @@ export async function clientLoader() {
 }
 
 clientLoader.hydrate = true;
+
+export function HydrateFallback() {
+  return <RouteLoading />;
+}
 
 export default function VendorDashboard() {
   const loaderData = useLoaderData();

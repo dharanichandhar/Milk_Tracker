@@ -9,6 +9,7 @@ import PaymentModal from '@/components/payment-modal';
 import { toast } from '@/components/ui/toaster';
 import { CreditCard, History, ShoppingBag } from 'lucide-react';
 import { API_BASE_URL } from '~/config';
+import RouteLoading from '@/components/route-loading';
 
 export async function clientLoader() {
   try {
@@ -41,6 +42,10 @@ export async function clientLoader() {
 }
 
 clientLoader.hydrate = true;
+
+export function HydrateFallback() {
+  return <RouteLoading />;
+}
 
 export default function PaymentsPage() {
   const loaderData = useLoaderData();

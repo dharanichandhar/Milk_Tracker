@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import VendorCard from '@/components/vendor-card';
 import { toast } from '@/components/ui/toaster';
 import { API_BASE_URL } from '~/config';
+import RouteLoading from '@/components/route-loading';
 
 export async function clientAction({ request }) {
   const formData = await request.formData();
@@ -66,6 +67,10 @@ export async function clientLoader() {
 }
 
 clientLoader.hydrate = true;
+
+export function HydrateFallback() {
+  return <RouteLoading />;
+}
 
 export default function VendorsPage() {
   const loaderData = useLoaderData();

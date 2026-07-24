@@ -1,4 +1,5 @@
 import { Outlet, useLoaderData, useRevalidator, Link, NavLink } from 'react-router';
+import RouteLoading from '@/components/route-loading';
 import { Toaster, toast } from '@/components/ui/toaster';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -51,6 +52,10 @@ export async function clientLoader() {
 }
 
 clientLoader.hydrate = true;
+
+export function HydrateFallback() {
+  return <RouteLoading />;
+}
 
 export function shouldRevalidate() {
   return true;
