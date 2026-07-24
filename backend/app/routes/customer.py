@@ -75,8 +75,8 @@ def create_customer(data: CustomerSingup, db: Session = Depends(get_db)):
         key="customer_session",
         value=token,
         httponly=True,
-        samesite="lax",
-        secure=False,
+        samesite="none",
+        secure=True,
         max_age=86400,
     )
 
@@ -104,8 +104,8 @@ def customer_login(data: CustomerLogin, db: Session = Depends(get_db)):
         key="customer_session",
         value=token,
         httponly=True,
-        samesite="lax",
-        secure=False,
+        samesite="none",
+        secure=True,
         max_age=86400,
     )
 

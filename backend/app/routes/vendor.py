@@ -83,8 +83,8 @@ def create_vendor(
         key="vendor_session",
         value=token,
         httponly=True,
-        samesite="lax",
-        secure=False,
+        samesite="none",
+        secure=True,
         max_age=86400,
     )
 
@@ -116,8 +116,8 @@ def vendor_login(data: VendorLogin, db: Session = Depends(get_db)):
         key="vendor_session",
         value=token,
         httponly=True,
-        samesite="lax",
-        secure=False,
+        samesite="none",
+        secure=True,
         max_age=86400,
     )
     return response
