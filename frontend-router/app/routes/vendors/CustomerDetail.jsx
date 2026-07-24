@@ -45,7 +45,7 @@ export default function CustomerDetailPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid grid-cols-3 gap-4">
         <Card>
           <CardHeader>
             <CardTitle className="text-sm font-medium">Total Quantity</CardTitle>
@@ -97,7 +97,7 @@ export default function CustomerDetailPage() {
                   <TableCell>{record.quantity}L</TableCell>
                   <TableCell className="hidden md:table-cell">₹{record.price_per_liter}/L</TableCell>
                   <TableCell>₹{record.amount}</TableCell>
-                  <TableCell>
+                  <TableCell className="hidden md:table-cell">
                     {record.quantity === 0 ? (
                       <Badge variant="destructive">Skipped</Badge>
                     ) : record.is_override ? (
@@ -131,7 +131,7 @@ export default function CustomerDetailPage() {
                   <TableHead>Amount</TableHead>
                   <TableHead className="hidden md:table-cell">Method</TableHead>
                   <TableHead>Paid On</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead className="hidden md:table-cell">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -141,7 +141,7 @@ export default function CustomerDetailPage() {
                     <TableCell>₹{payment.amount}</TableCell>
                     <TableCell className="hidden md:table-cell">{payment.payment_method}</TableCell>
                     <TableCell>{payment.paid_at || '-'}</TableCell>
-                    <TableCell>
+                    <TableCell className="hidden md:table-cell">
                       <Badge
                         variant={payment.status === 'success' ? 'success' : 'warning'}
                       >
