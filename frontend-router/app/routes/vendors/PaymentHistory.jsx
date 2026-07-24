@@ -73,7 +73,7 @@ export default function VendorPaymentHistory() {
                   <TableHead>Customer</TableHead>
                   <TableHead>Amount</TableHead>
                   <TableHead>Method</TableHead>
-                  <TableHead>Bill #</TableHead>
+                  <TableHead className="hidden md:table-cell">Bill #</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -93,7 +93,7 @@ export default function VendorPaymentHistory() {
                     <TableCell>
                       <Badge variant="outline">{payment.payment_method}</Badge>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="hidden md:table-cell text-muted-foreground">
                       {payment.bill_number}
                     </TableCell>
                   </TableRow>

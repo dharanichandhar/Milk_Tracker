@@ -48,7 +48,7 @@ export function Toaster() {
   const { toasts, removeToast } = useToast();
 
   return (
-    <div className="fixed top-4 right-4 z-[100] flex w-full max-w-[420px] flex-col gap-2">
+    <div className="fixed top-4 left-4 right-4 z-[100] flex w-auto max-w-[420px] mx-auto sm:left-auto sm:right-4 sm:mx-0 flex-col gap-2">
       {toasts.map((toast) => (
         <Toast
           key={toast.id}

@@ -136,6 +136,7 @@ export default function SubscriptionsPage() {
                         handleUpdateQuantity(sub.id, parseFloat(input.value));
                       }}
                       disabled={fetcher.state === 'submitting'}
+                      className="whitespace-nowrap"
                     >
                       {fetcher.state === 'submitting' ? 'Updating...' : 'Update'}
                     </Button>

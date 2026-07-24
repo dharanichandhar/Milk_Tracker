@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { NavLink, Outlet, useNavigate, useLoaderData, Navigate } from 'react-router';
+import { NavLink, Outlet, useNavigate, useLoaderData, Navigate, useNavigation } from 'react-router';
 import {
   Home,
   Users,
@@ -89,6 +89,8 @@ export default function CustomerSidebar() {
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
   const loaderData = useLoaderData();
+  const navigation = useNavigation();
+  const isLoading = navigation.state === 'loading';
 
   if (!loaderData.logged_in) {
     return <Navigate to="/customers/login" replace />;
@@ -110,6 +112,7 @@ export default function CustomerSidebar() {
 
   return (
     <div className="flex min-h-screen">
+      {isLoading && <div className="loading-bar" />}
 
       <aside className="hidden w-64 border-r bg-card lg:block">
         <SidebarContent onLogout={handleLogout} />

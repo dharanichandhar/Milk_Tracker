@@ -37,8 +37,8 @@ export default function CustomerDetailPage() {
             <ArrowLeft className="h-4 w-4" />
           </a>
         </Button>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight truncate">
             {customer?.name}
           </h1>
           <p className="text-muted-foreground">Customer #{params.id}</p>
@@ -85,7 +85,7 @@ export default function CustomerDetailPage() {
               <TableRow>
                 <TableHead>Date</TableHead>
                 <TableHead>Quantity</TableHead>
-                <TableHead>Rate</TableHead>
+                <TableHead className="hidden md:table-cell">Rate</TableHead>
                 <TableHead>Amount</TableHead>
                 <TableHead>Status</TableHead>
               </TableRow>
@@ -95,7 +95,7 @@ export default function CustomerDetailPage() {
                 <TableRow key={record.id}>
                   <TableCell>{record.date}</TableCell>
                   <TableCell>{record.quantity}L</TableCell>
-                  <TableCell>₹{record.price_per_liter}/L</TableCell>
+                  <TableCell className="hidden md:table-cell">₹{record.price_per_liter}/L</TableCell>
                   <TableCell>₹{record.amount}</TableCell>
                   <TableCell>
                     {record.quantity === 0 ? (
@@ -127,9 +127,9 @@ export default function CustomerDetailPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Bill #</TableHead>
+                  <TableHead className="hidden md:table-cell">Bill #</TableHead>
                   <TableHead>Amount</TableHead>
-                  <TableHead>Method</TableHead>
+                  <TableHead className="hidden md:table-cell">Method</TableHead>
                   <TableHead>Paid On</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
@@ -137,9 +137,9 @@ export default function CustomerDetailPage() {
               <TableBody>
                 {payments.map((payment) => (
                   <TableRow key={payment.id}>
-                    <TableCell>{payment.bill_number}</TableCell>
+                    <TableCell className="hidden md:table-cell">{payment.bill_number}</TableCell>
                     <TableCell>₹{payment.amount}</TableCell>
-                    <TableCell>{payment.payment_method}</TableCell>
+                    <TableCell className="hidden md:table-cell">{payment.payment_method}</TableCell>
                     <TableCell>{payment.paid_at || '-'}</TableCell>
                     <TableCell>
                       <Badge

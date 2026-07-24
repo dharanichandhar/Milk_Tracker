@@ -96,12 +96,12 @@ export default function PaymentsPage() {
               {payables.map((vendor) => (
                 <div
                   key={vendor.vendor_id}
-                  className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                  className="flex flex-col gap-3 p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors sm:flex-row sm:items-center sm:justify-between"
                 >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-semibold">{vendor.vendor_name}</h3>
-                      <Badge variant="secondary">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="font-semibold truncate">{vendor.vendor_name}</h3>
+                      <Badge variant="secondary" className="shrink-0">
                         {vendor.record_count} records
                       </Badge>
                     </div>
@@ -156,8 +156,8 @@ export default function PaymentsPage() {
                   <TableHead>Vendor</TableHead>
                   <TableHead>Amount</TableHead>
                   <TableHead>Method</TableHead>
-                  <TableHead>Bill #</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead className="hidden md:table-cell">Bill #</TableHead>
+                  <TableHead className="hidden md:table-cell">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -177,10 +177,10 @@ export default function PaymentsPage() {
                     <TableCell>
                       <Badge variant="outline">{payment.payment_method}</Badge>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="hidden md:table-cell text-muted-foreground">
                       {payment.bill_number}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden md:table-cell">
                       <Badge variant="success">Success</Badge>
                     </TableCell>
                   </TableRow>

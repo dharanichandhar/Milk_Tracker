@@ -157,12 +157,12 @@ export default function CalendarPage() {
         <>
           <Card className="bg-primary/5 border-primary/20">
             <CardContent className="pt-6">
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
                 <div>
                   <p className="text-sm text-muted-foreground">Pending Amount for {selectedVendor.name}</p>
                   <p className="text-2xl font-bold text-primary">₹{totalAmount.toFixed(2)}</p>
                 </div>
-                <div className="text-right">
+                <div className="sm:text-right">
                   <p className="text-sm text-muted-foreground">Current Price</p>
                   <p className="text-lg font-semibold">₹{currentPrice}/L</p>
                 </div>

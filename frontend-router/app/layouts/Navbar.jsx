@@ -96,7 +96,7 @@ export default function NavbarLayout() {
           </Link>
 
           <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-            <div className="w-full flex-1 md:w-auto md:flex-none">
+            <div className="flex-1 md:flex-none md:w-auto">
               {loaderData.logged_in && (
                 <NavLink
                   to={getDashboardRoute()}
@@ -111,21 +111,21 @@ export default function NavbarLayout() {
               )}
             </div>
 
-            <nav className="flex items-center space-x-2">
+            <nav className="flex items-center space-x-1 sm:space-x-2">
               {!loaderData.logged_in ? (
                 <>
-                  <Button variant="ghost" asChild>
+                  <Button variant="ghost" asChild className="text-xs sm:text-sm">
                     <NavLink to="/customers/login">Customer</NavLink>
                   </Button>
-                  <Button variant="ghost" asChild>
+                  <Button variant="ghost" asChild className="text-xs sm:text-sm">
                     <NavLink to="/vendors/login">Vendor</NavLink>
                   </Button>
                 </>
               ) : (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                      <Avatar className="h-8 w-8">
+                    <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                      <Avatar className="h-10 w-10">
                         <AvatarFallback className="bg-primary text-primary-foreground">
                           {loaderData.name?.charAt(0).toUpperCase()}
                         </AvatarFallback>

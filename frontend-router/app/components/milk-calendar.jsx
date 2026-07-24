@@ -58,17 +58,17 @@ export default function MilkCalendar({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-7 gap-1">
+        <div className="grid grid-cols-7 gap-px sm:gap-1">
           {weekDays.map((day) => (
             <div
               key={day}
-              className="p-2 text-center text-sm font-medium text-muted-foreground"
+              className="p-1 sm:p-2 text-center text-xs sm:text-sm font-medium text-muted-foreground"
             >
               {day}
             </div>
           ))}
           {emptyDays.map((_, index) => (
-            <div key={`empty-${index}`} className="p-2" />
+            <div key={`empty-${index}`} className="p-1 sm:p-2" />
           ))}
           {days.map((day) => {
             const record = getRecordForDate(day);
@@ -111,7 +111,7 @@ export default function MilkCalendar({
                 onClick={() => !isFuture && onDateClick?.(day)}
                 disabled={isFuture}
                 className={cn(
-                  'min-h-[60px] rounded-lg p-2 text-left transition-colors',
+                  'min-h-[44px] sm:min-h-[60px] rounded-lg p-1 sm:p-2 text-left transition-colors',
                   isSelected && 'ring-2 ring-primary',
                   isCurrentDay && 'bg-accent',
                   bgColor,
@@ -121,9 +121,9 @@ export default function MilkCalendar({
                   !record && !isFuture && !bgColor && 'hover:bg-muted'
                 )}
               >
-                <div className="text-sm font-medium">{format(day, 'd')}</div>
+                <div className="text-xs sm:text-sm font-medium">{format(day, 'd')}</div>
                 {!isFuture && (
-                  <div className="mt-1 text-xs">
+                  <div className="mt-0.5 sm:mt-1 text-[10px] sm:text-xs leading-tight">
                     {record?.quantity == 0 ? (
                       <span className="font-medium">Skipped</span>
                     ) : (
@@ -157,9 +157,9 @@ export default function MilkCalendar({
           </div>
         </div>
 
-        <div className="mt-4 p-4 bg-muted rounded-lg">
-          <div className="flex justify-between items-center">
-            <span className="font-medium">Recorded Amount:</span>
+        <div className="mt-4 p-3 sm:p-4 bg-muted rounded-lg">
+          <div className="flex flex-col gap-1 sm:flex-row sm:justify-between sm:items-center">
+            <span className="font-medium text-sm sm:text-base">Recorded Amount:</span>
             <span className="text-lg font-bold text-primary">₹{totalAmount.toFixed(2)}</span>
           </div>
           <p className="text-xs text-muted-foreground mt-1">
