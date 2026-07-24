@@ -1,5 +1,6 @@
 import { isRouteErrorResponse, Links, Meta, Outlet, Scripts } from 'react-router';
 import { ToastProvider } from '@/components/ui/toaster';
+import RouteLoading from '@/components/route-loading';
 import './app.css';
 
 export function Layout({ children }) {
@@ -25,6 +26,10 @@ export default function Root() {
       <Outlet />
     </ToastProvider>
   );
+}
+
+export function HydrateFallback() {
+  return <RouteLoading />;
 }
 
 export function ErrorBoundary({ error }) {

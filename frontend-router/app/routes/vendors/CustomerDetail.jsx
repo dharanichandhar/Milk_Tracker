@@ -5,50 +5,24 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ArrowLeft } from 'lucide-react';
 import { API_BASE_URL } from '~/config';
-import RouteLoading from '@/components/route-loading';
 
 export async function clientLoader({ params }) {
-  try {
-    const vendorRes = await fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' });
-    const vendorData = await vendorRes.json();
+  const customerRes = await fetch(
+    `${API_BASE_URL}/api/vendors/customers/${params.id}`,
+    { credentials: 'include' }
+  );
+  const customerData = await customerRes.json();
 
-    if (!vendorData.logged_in) {
-      return { shouldRedirect: true, redirectTo: '/vendors/login' };
-    }
-
-    const customerRes = await fetch(
-      `${API_BASE_URL}/api/vendors/customers/${params.id}`,
-      { credentials: 'include' }
-    );
-    const customerData = await customerRes.json();
-
-    return {
-      shouldRedirect: false,
-      customer: customerData.customer,
-      records: customerData.records || [],
-      payments: customerData.payments || [],
-      vendor_name: vendorData.name,
-    };
-  } catch (err) {
-    console.error('Customer detail loader failed', err);
-  }
-
-  return { shouldRedirect: true, redirectTo: '/vendors/login' };
-}
-
-clientLoader.hydrate = true;
-
-export function HydrateFallback() {
-  return <RouteLoading />;
+  return {
+    customer: customerData.customer,
+    records: customerData.records || [],
+    payments: customerData.payments || [],
+  };
 }
 
 export default function CustomerDetailPage() {
   const loaderData = useLoaderData();
   const params = useParams();
-
-  if (loaderData.shouldRedirect) {
-    return <Navigate to={loaderData.redirectTo} replace />;
-  }
 
   const { customer, records, payments } = loaderData;
 

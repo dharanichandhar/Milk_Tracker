@@ -1,9 +1,8 @@
-import { useLoaderData, useFetcher, Navigate, useRevalidator } from 'react-router';
+import { useLoaderData, useFetcher, Navigate, useRevalidator, useRouteLoaderData } from 'react-router';
 import { useEffect } from 'react';
 import VendorCard from '@/components/vendor-card';
 import { toast } from '@/components/ui/toaster';
 import { API_BASE_URL } from '~/config';
-import RouteLoading from '@/components/route-loading';
 
 export async function clientAction({ request }) {
   const formData = await request.formData();
@@ -34,42 +33,22 @@ export async function clientAction({ request }) {
 }
 
 export async function clientLoader() {
-  try {
-    const [authRes, vendorsRes, subsRes] = await Promise.all([
-      fetch(`${API_BASE_URL}/api/customers/me`, { credentials: 'include' }),
-      fetch(`${API_BASE_URL}/api/vendors/all`, { credentials: 'include' }),
-      fetch(`${API_BASE_URL}/api/subscriptions/my-vendors`, { credentials: 'include' }),
-    ]);
+  const [vendorsRes, subsRes] = await Promise.all([
+    fetch(`${API_BASE_URL}/api/vendors/all`, { credentials: 'include' }),
+    fetch(`${API_BASE_URL}/api/subscriptions/my-vendors`, { credentials: 'include' }),
+  ]);
 
-    const authData = await authRes.json();
-    if (!authData.logged_in) {
-      return { shouldRedirect: true, redirectTo: '/customers/login' };
-    }
+  const vendorsData = await vendorsRes.json();
+  const subsData = await subsRes.json();
 
-    const vendorsData = await vendorsRes.json();
-    const subsData = await subsRes.json();
+  const subscribedVendorIds = new Set(
+    subsData.vendors?.map((v) => v.id) || []
+  );
 
-    const subscribedVendorIds = new Set(
-      subsData.vendors?.map((v) => v.id) || []
-    );
-
-    return {
-      shouldRedirect: false,
-      vendors: vendorsData,
-      subscribedVendorIds,
-      customer_name: authData.name,
-    };
-  } catch (err) {
-    console.error('Vendors loader failed', err);
-  }
-
-  return { shouldRedirect: true, redirectTo: '/customers/login' };
-}
-
-clientLoader.hydrate = true;
-
-export function HydrateFallback() {
-  return <RouteLoading />;
+  return {
+    vendors: vendorsData,
+    subscribedVendorIds,
+  };
 }
 
 export default function VendorsPage() {
@@ -91,10 +70,6 @@ export default function VendorsPage() {
       }
     }
   }, [fetcher.data, revalidator]);
-
-  if (loaderData.shouldRedirect) {
-    return <Navigate to={loaderData.redirectTo} replace />;
-  }
 
   const { vendors, subscribedVendorIds } = loaderData;
 

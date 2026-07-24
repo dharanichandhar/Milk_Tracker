@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router';
+import { NavLink, Outlet, useNavigate, useLoaderData, Navigate } from 'react-router';
 import {
   Home,
   Users,
@@ -13,7 +13,24 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
-import { API_BASE_URL } from "~/config";
+import { API_BASE_URL } from '~/config';
+import { getVendorAuth, clearAuthCache } from '~/lib/auth-cache';
+
+export async function clientLoader() {
+  const data = await getVendorAuth();
+  if (!data.logged_in) {
+    return { logged_in: false };
+  }
+  return {
+    logged_in: true,
+    vendor_name: data.name,
+    vendor_id: data.vendor_id,
+  };
+}
+
+export function shouldRevalidate() {
+  return false;
+}
 
 const sidebarLinks = [
   { to: '/vendors/dashboard', icon: Home, label: 'Dashboard' },
@@ -69,6 +86,11 @@ function SidebarContent({ onNavigate, onLogout }) {
 export default function VendorSidebar() {
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
+  const loaderData = useLoaderData();
+
+  if (!loaderData.logged_in) {
+    return <Navigate to="/vendors/login" replace />;
+  }
 
   const handleLogout = async () => {
     try {
@@ -76,6 +98,7 @@ export default function VendorSidebar() {
         method: 'POST',
         credentials: 'include',
       });
+      clearAuthCache();
       navigate('/');
     } catch (err) {
       console.error('Logout failed:', err);

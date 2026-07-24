@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router';
+import { NavLink, Outlet, useNavigate, useLoaderData, Navigate } from 'react-router';
 import {
   Home,
   Users,
@@ -14,7 +14,24 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
-import { API_BASE_URL } from "~/config";
+import { API_BASE_URL } from '~/config';
+import { getCustomerAuth, clearAuthCache } from '~/lib/auth-cache';
+
+export async function clientLoader() {
+  const data = await getCustomerAuth();
+  if (!data.logged_in) {
+    return { logged_in: false };
+  }
+  return {
+    logged_in: true,
+    customer_name: data.name,
+    customer_id: data.customer_id,
+  };
+}
+
+export function shouldRevalidate() {
+  return false;
+}
 
 const sidebarLinks = [
   { to: '/customers/dashboard', icon: Home, label: 'Dashboard' },
@@ -71,6 +88,11 @@ function SidebarContent({ onNavigate, onLogout }) {
 export default function CustomerSidebar() {
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
+  const loaderData = useLoaderData();
+
+  if (!loaderData.logged_in) {
+    return <Navigate to="/customers/login" replace />;
+  }
 
   const handleLogout = async () => {
     try {
@@ -78,6 +100,7 @@ export default function CustomerSidebar() {
         method: 'POST',
         credentials: 'include',
       });
+      clearAuthCache();
       navigate('/');
     } catch (err) {
       console.error('Logout failed:', err);
@@ -87,14 +110,14 @@ export default function CustomerSidebar() {
 
   return (
     <div className="flex min-h-screen">
-  
+
       <aside className="hidden w-64 border-r bg-card lg:block">
         <SidebarContent onLogout={handleLogout} />
       </aside>
 
-      
+
       <div className="flex flex-1 flex-col">
-       
+
         <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-card px-4 lg:hidden">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>

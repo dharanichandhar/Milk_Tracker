@@ -1,62 +1,35 @@
-import { useLoaderData, Navigate } from 'react-router';
+import { useLoaderData, Navigate, useRouteLoaderData } from 'react-router';
 import StatsCard from '@/components/stats-card';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Users, TrendingUp, CreditCard, AlertCircle, Package } from 'lucide-react';
 import { API_BASE_URL } from '~/config';
-import RouteLoading from '@/components/route-loading';
 
 export async function clientLoader() {
-  try {
-    const vendorRes = await fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' });
-    const vendorData = await vendorRes.json();
+  const [analyticsRes, paymentAnalyticsRes] = await Promise.all([
+    fetch(`${API_BASE_URL}/api/vendors/analytics`, { credentials: 'include' }),
+    fetch(`${API_BASE_URL}/api/vendors/payment-analytics`, { credentials: 'include' }),
+  ]);
 
-    if (!vendorData.logged_in) {
-      return { shouldRedirect: true, redirectTo: '/vendors/login' };
-    }
+  const analyticsData = await analyticsRes.json();
+  const paymentAnalyticsData = await paymentAnalyticsRes.json();
 
-    const [analyticsRes, paymentAnalyticsRes] = await Promise.all([
-      fetch(`${API_BASE_URL}/api/vendors/analytics`, { credentials: 'include' }),
-      fetch(`${API_BASE_URL}/api/vendors/payment-analytics`, { credentials: 'include' }),
-    ]);
-
-    const analyticsData = await analyticsRes.json();
-    const paymentAnalyticsData = await paymentAnalyticsRes.json();
-
-    return {
-      shouldRedirect: false,
-      vendor_id: vendorData.vendor_id,
-      vendor_name: vendorData.name,
-      analytics: analyticsData,
-      paymentAnalytics: paymentAnalyticsData,
-    };
-  } catch (err) {
-    console.error('Vendor dashboard loader failed', err);
-  }
-
-  return { shouldRedirect: true, redirectTo: '/vendors/login' };
-}
-
-clientLoader.hydrate = true;
-
-export function HydrateFallback() {
-  return <RouteLoading />;
+  return {
+    analytics: analyticsData,
+    paymentAnalytics: paymentAnalyticsData,
+  };
 }
 
 export default function VendorDashboard() {
   const loaderData = useLoaderData();
-
-  if (loaderData.shouldRedirect) {
-    return <Navigate to={loaderData.redirectTo} replace />;
-  }
-
-  const { analytics, vendor_name, paymentAnalytics } = loaderData;
+  const layoutData = useRouteLoaderData('VendorSidebar');
+  const { analytics, paymentAnalytics } = loaderData;
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">
-          Welcome, {vendor_name}!
+          Welcome, {layoutData?.vendor_name || ''}!
         </h1>
         <p className="text-muted-foreground">
           Here's your vendor dashboard overview

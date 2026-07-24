@@ -1,51 +1,26 @@
-import { useLoaderData, Navigate } from 'react-router';
+import { useLoaderData, Navigate, useRouteLoaderData } from 'react-router';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Receipt } from 'lucide-react';
 import { API_BASE_URL } from '~/config';
-import RouteLoading from '@/components/route-loading';
 
 export async function clientLoader() {
-  try {
-    const vendorRes = await fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' });
-    const vendorData = await vendorRes.json();
+  const historyRes = await fetch(`${API_BASE_URL}/api/vendors/payment-history`, {
+    credentials: 'include',
+  });
+  const historyData = await historyRes.json();
 
-    if (!vendorData.logged_in) {
-      return { shouldRedirect: true, redirectTo: '/vendors/login' };
-    }
-
-    const historyRes = await fetch(`${API_BASE_URL}/api/vendors/payment-history`, {
-      credentials: 'include',
-    });
-    const historyData = await historyRes.json();
-
-    return {
-      shouldRedirect: false,
-      vendor_name: vendorData.name,
-      payments: historyData.payments || [],
-    };
-  } catch (err) {
-    console.error('Payment history loader failed', err);
-  }
-
-  return { shouldRedirect: true, redirectTo: '/vendors/login' };
-}
-
-clientLoader.hydrate = true;
-
-export function HydrateFallback() {
-  return <RouteLoading />;
+  return {
+    payments: historyData.payments || [],
+  };
 }
 
 export default function VendorPaymentHistory() {
   const loaderData = useLoaderData();
-
-  if (loaderData.shouldRedirect) {
-    return <Navigate to={loaderData.redirectTo} replace />;
-  }
-
-  const { payments, vendor_name } = loaderData;
+  const layoutData = useRouteLoaderData('VendorSidebar');
+  const { payments } = loaderData;
+  const vendor_name = layoutData?.vendor_name || '';
 
   const totalAmount = payments.reduce((sum, p) => sum + p.amount, 0);
 

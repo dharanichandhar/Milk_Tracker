@@ -1,4 +1,4 @@
-import { useLoaderData, Navigate, useFetcher, useRevalidator } from 'react-router';
+import { useLoaderData, Navigate, useFetcher, useRevalidator, useRouteLoaderData } from 'react-router';
 import { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/components/ui/toaster';
 import { API_BASE_URL } from '~/config';
-import RouteLoading from '@/components/route-loading';
 
 export async function clientAction({ request }) {
   const formData = await request.formData();
@@ -37,35 +36,14 @@ export async function clientAction({ request }) {
 }
 
 export async function clientLoader() {
-  try {
-    const [authRes, subsRes] = await Promise.all([
-      fetch(`${API_BASE_URL}/api/customers/me`, { credentials: 'include' }),
-      fetch(`${API_BASE_URL}/api/subscriptions/my-vendors`, { credentials: 'include' }),
-    ]);
+  const subsRes = await fetch(`${API_BASE_URL}/api/subscriptions/my-vendors`, {
+    credentials: 'include',
+  });
+  const subsData = await subsRes.json();
 
-    const authData = await authRes.json();
-    if (!authData.logged_in) {
-      return { shouldRedirect: true, redirectTo: '/customers/login' };
-    }
-
-    const subsData = await subsRes.json();
-
-    return {
-      shouldRedirect: false,
-      subscriptions: subsData.vendors || [],
-      customer_name: authData.name,
-    };
-  } catch (err) {
-    console.error('Subscriptions loader failed', err);
-  }
-
-  return { shouldRedirect: true, redirectTo: '/customers/login' };
-}
-
-clientLoader.hydrate = true;
-
-export function HydrateFallback() {
-  return <RouteLoading />;
+  return {
+    subscriptions: subsData.vendors || [],
+  };
 }
 
 export default function SubscriptionsPage() {
@@ -91,10 +69,6 @@ export default function SubscriptionsPage() {
       }
     }
   }, [fetcher.data, revalidator]);
-
-  if (loaderData.shouldRedirect) {
-    return <Navigate to={loaderData.redirectTo} replace />;
-  }
 
   const { subscriptions } = loaderData;
 

@@ -1,42 +1,21 @@
 import { useEffect } from 'react';
-import { useLoaderData, Navigate, useFetcher } from 'react-router';
+import { useLoaderData, Navigate, useFetcher, useRouteLoaderData } from 'react-router';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/components/ui/toaster';
 import { API_BASE_URL } from '~/config';
-import RouteLoading from '@/components/route-loading';
 
 export async function clientLoader() {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' });
-    const data = await res.json();
+  const profileRes = await fetch(`${API_BASE_URL}/api/vendors/profile`, {
+    credentials: 'include',
+  });
+  const profileData = await profileRes.json();
 
-    if (!data.logged_in) {
-      return { shouldRedirect: true, redirectTo: '/vendors/login' };
-    }
-
-    const profileRes = await fetch(`${API_BASE_URL}/api/vendors/profile`, {
-      credentials: 'include',
-    });
-    const profileData = await profileRes.json();
-
-    return {
-      shouldRedirect: false,
-      vendor: profileData.vendor || data,
-    };
-  } catch (err) {
-    console.error('Vendor profile loader failed', err);
-  }
-
-  return { shouldRedirect: true, redirectTo: '/vendors/login' };
-}
-
-clientLoader.hydrate = true;
-
-export function HydrateFallback() {
-  return <RouteLoading />;
+  return {
+    vendor: profileData.vendor || {},
+  };
 }
 
 export async function clientAction({ request }) {
@@ -64,12 +43,9 @@ export async function clientAction({ request }) {
 export default function VendorProfilePage() {
   const loaderData = useLoaderData();
   const fetcher = useFetcher();
+  const layoutData = useRouteLoaderData('VendorSidebar');
 
-  if (loaderData.shouldRedirect) {
-    return <Navigate to={loaderData.redirectTo} replace />;
-  }
-
-  const { vendor } = loaderData;
+  const vendor = loaderData.vendor || { name: layoutData?.vendor_name || '', email: '' };
 
   useEffect(() => {
     if (fetcher.data?.message) {

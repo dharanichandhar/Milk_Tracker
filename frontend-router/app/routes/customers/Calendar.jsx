@@ -10,38 +10,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { toast } from '@/components/ui/toaster';
 import { format, parseISO } from 'date-fns';
 import { API_BASE_URL } from '~/config';
-import RouteLoading from '@/components/route-loading';
 
 export async function clientLoader() {
-  try {
-    const [authRes, subsRes] = await Promise.all([
-      fetch(`${API_BASE_URL}/api/customers/me`, { credentials: 'include' }),
-      fetch(`${API_BASE_URL}/api/subscriptions/my-vendors`, { credentials: 'include' }),
-    ]);
+  const subsRes = await fetch(`${API_BASE_URL}/api/subscriptions/my-vendors`, {
+    credentials: 'include',
+  });
+  const subsData = await subsRes.json();
 
-    const authData = await authRes.json();
-    if (!authData.logged_in) {
-      return { shouldRedirect: true, redirectTo: '/customers/login' };
-    }
-
-    const subsData = await subsRes.json();
-
-    return {
-      shouldRedirect: false,
-      subscriptions: subsData.vendors || [],
-      customer_name: authData.name,
-    };
-  } catch (err) {
-    console.error('Calendar loader failed', err);
-  }
-
-  return { shouldRedirect: true, redirectTo: '/customers/login' };
-}
-
-clientLoader.hydrate = true;
-
-export function HydrateFallback() {
-  return <RouteLoading />;
+  return {
+    subscriptions: subsData.vendors || [],
+  };
 }
 
 export default function CalendarPage() {
@@ -54,10 +32,6 @@ export default function CalendarPage() {
   const [currentPrice, setCurrentPrice] = useState(60);
   const [totalAmount, setTotalAmount] = useState(0);
   const [saving, setSaving] = useState(false);
-
-  if (loaderData.shouldRedirect) {
-    return <Navigate to={loaderData.redirectTo} replace />;
-  }
 
   const { subscriptions } = loaderData;
 

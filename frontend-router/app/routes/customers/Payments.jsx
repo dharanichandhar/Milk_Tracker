@@ -1,4 +1,4 @@
-import { useLoaderData, Navigate, useRevalidator } from 'react-router';
+import { useLoaderData, Navigate, useRevalidator, useRouteLoaderData } from 'react-router';
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,42 +9,21 @@ import PaymentModal from '@/components/payment-modal';
 import { toast } from '@/components/ui/toaster';
 import { CreditCard, History, ShoppingBag } from 'lucide-react';
 import { API_BASE_URL } from '~/config';
-import RouteLoading from '@/components/route-loading';
 
 export async function clientLoader() {
-  try {
-    const [authRes, payablesRes, historyRes] = await Promise.all([
-      fetch(`${API_BASE_URL}/api/customers/me`, { credentials: 'include' }),
-      fetch(`${API_BASE_URL}/api/customers/payable-amounts`, { credentials: 'include' }),
-      fetch(`${API_BASE_URL}/api/customers/payment-history`, { credentials: 'include' }),
-    ]);
+  const [payablesRes, historyRes] = await Promise.all([
+    fetch(`${API_BASE_URL}/api/customers/payable-amounts`, { credentials: 'include' }),
+    fetch(`${API_BASE_URL}/api/customers/payment-history`, { credentials: 'include' }),
+  ]);
 
-    const authData = await authRes.json();
-    if (!authData.logged_in) {
-      return { shouldRedirect: true, redirectTo: '/customers/login' };
-    }
+  const payablesData = await payablesRes.json();
+  const historyData = await historyRes.json();
 
-    const payablesData = await payablesRes.json();
-    const historyData = await historyRes.json();
-
-    return {
-      shouldRedirect: false,
-      payables: payablesData.payables || [],
-      grandTotal: payablesData.grand_total || 0,
-      paymentHistory: historyData.payments || [],
-      customer_name: authData.name,
-    };
-  } catch (err) {
-    console.error('Payments loader failed', err);
-  }
-
-  return { shouldRedirect: true, redirectTo: '/customers/login' };
-}
-
-clientLoader.hydrate = true;
-
-export function HydrateFallback() {
-  return <RouteLoading />;
+  return {
+    payables: payablesData.payables || [],
+    grandTotal: payablesData.grand_total || 0,
+    paymentHistory: historyData.payments || [],
+  };
 }
 
 export default function PaymentsPage() {
@@ -52,10 +31,6 @@ export default function PaymentsPage() {
   const revalidator = useRevalidator();
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-
-  if (loaderData.shouldRedirect) {
-    return <Navigate to={loaderData.redirectTo} replace />;
-  }
 
   const { payables, grandTotal, paymentHistory } = loaderData;
 

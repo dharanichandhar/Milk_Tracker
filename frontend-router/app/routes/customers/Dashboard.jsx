@@ -1,57 +1,27 @@
-import { useLoaderData, Navigate } from 'react-router';
+import { useLoaderData, Navigate, useRouteLoaderData } from 'react-router';
 import StatsCard from '@/components/stats-card';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Users, DollarSign } from 'lucide-react';
 import { API_BASE_URL } from '~/config';
-import RouteLoading from '@/components/route-loading';
 
 export async function clientLoader() {
-  try {
-    const customerRes = await fetch(`${API_BASE_URL}/api/customers/me`, { credentials: 'include' });
-    const customerData = await customerRes.json();
-
-    if (!customerData.logged_in) {
-      return { shouldRedirect: true, redirectTo: '/customers/login' };
-    }
-
-    const statsRes = await fetch(`${API_BASE_URL}/api/customers/dashboard-stats`, {
-      credentials: 'include',
-    });
-    const statsData = await statsRes.json();
-
-    return {
-      shouldRedirect: false,
-      customer_name: customerData.name,
-      customer_id: customerData.customer_id,
-      stats: statsData,
-    };
-  } catch (err) {
-    console.error('Dashboard loader failed', err);
-  }
-
-  return { shouldRedirect: true, redirectTo: '/customers/login' };
-}
-
-clientLoader.hydrate = true;
-
-export function HydrateFallback() {
-  return <RouteLoading />;
+  const statsRes = await fetch(`${API_BASE_URL}/api/customers/dashboard-stats`, {
+    credentials: 'include',
+  });
+  const statsData = await statsRes.json();
+  return { stats: statsData };
 }
 
 export default function CustomerDashboard() {
   const loaderData = useLoaderData();
-
-  if (loaderData.shouldRedirect) {
-    return <Navigate to={loaderData.redirectTo} replace />;
-  }
-
+  const layoutData = useRouteLoaderData('CustomerSidebar');
   const { stats } = loaderData;
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">
-          Welcome, {loaderData.customer_name}!
+          Welcome, {layoutData?.customer_name || ''}!
         </h1>
         <p className="text-muted-foreground">
           Here's your milk subscription overview

@@ -8,39 +8,17 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { toast } from '@/components/ui/toaster';
 import { DollarSign } from 'lucide-react';
 import { API_BASE_URL } from '~/config';
-import RouteLoading from '@/components/route-loading';
 
 export async function clientLoader() {
-  try {
-    const vendorRes = await fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' });
-    const vendorData = await vendorRes.json();
+  const pricingRes = await fetch(`${API_BASE_URL}/api/vendors/pricing`, {
+    credentials: 'include',
+  });
+  const pricingData = await pricingRes.json();
 
-    if (!vendorData.logged_in) {
-      return { shouldRedirect: true, redirectTo: '/vendors/login' };
-    }
-
-    const pricingRes = await fetch(`${API_BASE_URL}/api/vendors/pricing`, {
-      credentials: 'include',
-    });
-    const pricingData = await pricingRes.json();
-
-    return {
-      shouldRedirect: false,
-      currentPrice: pricingData.current_price || 60,
-      priceHistory: pricingData.history || [],
-      vendor_name: vendorData.name,
-    };
-  } catch (err) {
-    console.error('Pricing loader failed', err);
-  }
-
-  return { shouldRedirect: true, redirectTo: '/vendors/login' };
-}
-
-clientLoader.hydrate = true;
-
-export function HydrateFallback() {
-  return <RouteLoading />;
+  return {
+    currentPrice: pricingData.current_price || 60,
+    priceHistory: pricingData.history || [],
+  };
 }
 
 export async function clientAction({ request }) {
@@ -63,10 +41,6 @@ export async function clientAction({ request }) {
 export default function PricingPage() {
   const loaderData = useLoaderData();
   const fetcher = useFetcher();
-
-  if (loaderData.shouldRedirect) {
-    return <Navigate to={loaderData.redirectTo} replace />;
-  }
 
   const { currentPrice, priceHistory } = loaderData;
 

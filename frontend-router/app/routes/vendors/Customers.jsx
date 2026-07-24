@@ -4,47 +4,21 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { API_BASE_URL } from '~/config';
-import RouteLoading from '@/components/route-loading';
 
 export async function clientLoader() {
-  try {
-    const vendorRes = await fetch(`${API_BASE_URL}/api/vendors/me`, { credentials: 'include' });
-    const vendorData = await vendorRes.json();
+  const customersRes = await fetch(`${API_BASE_URL}/api/vendors/customers`, {
+    credentials: 'include',
+  });
+  const customersData = await customersRes.json();
 
-    if (!vendorData.logged_in) {
-      return { shouldRedirect: true, redirectTo: '/vendors/login' };
-    }
-
-    const customersRes = await fetch(`${API_BASE_URL}/api/vendors/customers`, {
-      credentials: 'include',
-    });
-    const customersData = await customersRes.json();
-
-    return {
-      shouldRedirect: false,
-      customers: customersData.customers || [],
-      vendor_name: vendorData.name,
-    };
-  } catch (err) {
-    console.error('Customers loader failed', err);
-  }
-
-  return { shouldRedirect: true, redirectTo: '/vendors/login' };
-}
-
-clientLoader.hydrate = true;
-
-export function HydrateFallback() {
-  return <RouteLoading />;
+  return {
+    customers: customersData.customers || [],
+  };
 }
 
 export default function CustomersPage() {
   const loaderData = useLoaderData();
   const [search, setSearch] = useState('');
-
-  if (loaderData.shouldRedirect) {
-    return <Navigate to={loaderData.redirectTo} replace />;
-  }
 
   const { customers } = loaderData;
 

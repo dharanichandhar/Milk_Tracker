@@ -1,37 +1,18 @@
 import * as React from 'react';
-import { useLoaderData, Navigate, useFetcher } from 'react-router';
+import { useLoaderData, useFetcher, useRouteLoaderData } from 'react-router';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/components/ui/toaster';
 import { API_BASE_URL } from '~/config';
-import RouteLoading from '@/components/route-loading';
 
 export async function clientLoader() {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/customers/me`, { credentials: 'include' });
-    const data = await res.json();
-
-    if (!data.logged_in) {
-      return { shouldRedirect: true, redirectTo: '/customers/login' };
-    }
-
-    return {
-      shouldRedirect: false,
-      customer: data,
-    };
-  } catch (err) {
-    console.error('Profile loader failed', err);
-  }
-
-  return { shouldRedirect: true, redirectTo: '/customers/login' };
-}
-
-clientLoader.hydrate = true;
-
-export function HydrateFallback() {
-  return <RouteLoading />;
+  const res = await fetch(`${API_BASE_URL}/api/customers/profile`, {
+    credentials: 'include',
+  });
+  const data = await res.json();
+  return { customer: data };
 }
 
 export async function clientAction({ request }) {
@@ -59,12 +40,9 @@ export async function clientAction({ request }) {
 export default function ProfilePage() {
   const loaderData = useLoaderData();
   const fetcher = useFetcher();
+  const layoutData = useRouteLoaderData('CustomerSidebar');
 
-  if (loaderData.shouldRedirect) {
-    return <Navigate to={loaderData.redirectTo} replace />;
-  }
-
-  const { customer } = loaderData;
+  const customer = loaderData.customer || { name: layoutData?.customer_name || '', email: '' };
 
   React.useEffect(() => {
     if (fetcher.data?.message) {
