@@ -3,11 +3,15 @@ import AuthForm from '@/components/AuthForm/AuthForm';
 import { API_BASE_URL } from '~/config';
 
 export async function clientLoader() {
-  const res = await fetch(`${API_BASE_URL}/api/customers/me`, { credentials: 'include' });
-  const data = await res.json();
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/customers/me`, { credentials: 'include' });
+    const data = await res.json();
 
-  if (data.logged_in) {
-    return { shouldRedirect: true, redirectTo: '/customers/dashboard' };
+    if (data.logged_in) {
+      return { shouldRedirect: true, redirectTo: '/customers/dashboard' };
+    }
+  } catch (err) {
+    console.error('Auth check failed', err);
   }
 
   return { shouldRedirect: false };
